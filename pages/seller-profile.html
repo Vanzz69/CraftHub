@@ -1,1 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seller Profile — CraftNest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles/main.css" />
+  <link rel="stylesheet" href="../styles/components.css" />
+  <style>
+    .seller-profile-page { padding-top: var(--nav-h); min-height: 100svh; background: var(--cream); }
 
+    /* ── Hero Banner ── */
+    .shop-banner {
+      position: relative;
+      height: 280px;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--bark), var(--clay-dark));
+    }
+
+    .shop-banner-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0.35;
+      transition: transform 8s ease;
+    }
+
+    .shop-banner:hover .shop-banner-img { transform: scale(1.04); }
+
+    /* Grain overlay on banner */
+    .shop-banner::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, rgba(42,26,14,0.6) 100%);
+    }
+
+    /* ── Profile header card ── */
+    .profile-header-card {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 var(--space-xl);
+      position: relative;
+      z-index: 2;
+      margin-top: -80px;
+    }
+
+    .profile-header-inner {
+      background: var(--parchment);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-2xl);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: var(--space-xl);
+      align-items: flex-end;
+      box-shadow: var(--shadow-lg);
+    }
+
+    @media (max-width: 768px) {
+      .profile-header-inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+        align-items: center;
+      }
+      .profile-avatar-wrap { margin: 0 auto; }
+      .profile-actions { justify-content: center; }
+    }
+
+    .profile-avatar-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .profile-avatar {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      border: 4px solid var(--parchment);
+      object-fit: cover;
+      box-shadow: var(--shadow-md);
+      display: block;
+    }
+
+    .profile-verified {
+      position: absolute;
+      bottom: 2px; right: 2px;
+      width: 28px; height: 28px;
+      background: var(--moss);
+      border: 2px solid var(--parchment);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.75rem;
+    }
+
+    .profile-meta { flex: 1; }
+
+    .profile-name {
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      margin-bottom: var(--space-xs);
+      color: var(--text-primary);
+    }
+
+    .profile-location {
+      font-family: var(--font-ui);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: var(--space-md);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    @media (max-width: 768px) { .profile-location { justify-content: center; } }
+
+    .profile-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    @media (max-width: 768px) { .profile-tags { justify-content: center; } }
+
+    .craft-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      background: var(--sand);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .profile-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      align-items: flex-end;
+    }
+
+    .btn-follow {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 0.6rem 1.5rem;
+      border-radius: var(--radius-full);
+      border: 1.5px solid var(--clay);
+      background: transparent;
+      color: var(--clay);
+      font-family: var(--font-ui);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--dur-med), color var(--dur-med), transform var(--dur-fast) var(--ease-spring);
+    }
+
+    .btn-follow:hover, .btn-follow.following {
+      background: var(--clay);
+      color: white;
+      transform: scale(1.02);
+    }
+
+    .btn-message {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 0.6rem 1.5rem;
+      border-radius: var(--radius-full);
+      border: 1.5px solid var(--border);
+      background: var(--warm-white);
+      color: var(--text-secondary);
+      font-family: var(--font-ui);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color var(--dur-fast), color var(--dur-fast), transform var(--dur-fast) var(--ease-spring);
+    }
+
+    .btn-message:hover { border-color: var(--clay); color: var(--clay); transform: scale(1.02); }
+
+    /* ── Stats strip ── */
+    .stats-strip {
+      max-width: var(--max-width);
+      margin: var(--space-xl) auto 0;
+      padding: 0 var(--space-xl);
+    }
+
+    .stats-inner {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      background: var(--parchment);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    @media (max-width: 700px) { .stats-inner { grid-template-columns: repeat(3, 1fr); } }
+
+    .stat-cell {
+      text-align: center;
+      padding: var(--space-lg);
+      border-right: 1px solid var(--border);
+      position: relative;
+      transition: background var(--dur-fast);
+    }
+
+    .stat-cell:last-child { border-right: none; }
+    .stat-cell:hover { background: var(--sand); }
+
+    .stat-cell strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-cell span {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Main content area ── */
+    .profile-body {
+      max-width: var(--max-width);
+      margin: var(--space-2xl) auto;
+      padding: 0 var(--space-xl);
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: var(--space-2xl);
+      align-items: flex-start;
+    }
+
+    @media (max-width: 900px) {
+      .profile-body { grid-template-columns: 1fr; }
+    }
+
+    /* ── Sidebar ── */
+    .profile-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xl);
+    }
+
+    .sidebar-card {
+      background: var(--parchment);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+    }
+
+    .sidebar-card h4 {
+      font-size: 0.9rem;
+      margin-bottom: var(--space-md);
+      color: var(--text-primary);
+    }
+
+    .sidebar-card p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* Social links */
+    .social-links {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .social-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-family: var(--font-ui);
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--border);
+      transition: color var(--dur-fast);
+    }
+
+    .social-link:last-child { border-bottom: none; }
+    .social-link:hover { color: var(--clay); }
+
+    .social-link-icon {
+      width: 28px; height: 28px;
+      border-radius: var(--radius-sm);
+      background: var(--sand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    /* Policies */
+    .policy-item {
+      display: flex;
+      gap: var(--space-md);
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-ui);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .policy-item:last-child { border-bottom: none; }
+    .policy-icon { font-size: 1rem; flex-shrink: 0; }
+
+    /* Member since */
+    .member-since {
+      font-family: var(--font-ui);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: center;
+      padding-top: var(--space-sm);
+    }
+
+    /* ── Products content ── */
+    .profile-content { flex: 1; min-width: 0; }
+
+    /* Toolbar */
+    .shop-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+      flex-wrap: wrap;
+    }
+
+    .shop-toolbar-tabs {
+      display: flex;
+      gap: 2px;
+      background: var(--sand);
+      border-radius: var(--radius-full);
+      padding: 3px;
+    }
+
+    .shop-tab {
+      padding: 0.4rem 1rem;
+      border-radius: var(--radius-full);
+      font-family: var(--font-ui);
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      border: none;
+      background: none;
+      transition: background var(--dur-med), color var(--dur-med), box-shadow var(--dur-med);
+    }
+
+    .shop-tab.active {
+      background: var(--parchment);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ── Review section ── */
+    .shop-reviews-header {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-2xl);
+      padding: var(--space-xl) 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: var(--space-xl);
+    }
+
+    .shop-avg-score {
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .shop-avg-score .big-num {
+      font-family: var(--font-display);
+      font-size: 4rem;
+      font-weight: 900;
+      color: var(--text-primary);
+      line-height: 1;
+      display: block;
+    }
+
+    .shop-avg-score .stars-disp {
+      color: var(--ochre);
+      font-size: 1rem;
+      letter-spacing: 2px;
+      display: block;
+      margin: 4px 0;
+    }
+
+    .shop-avg-score .rev-count {
+      font-family: var(--font-ui);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* ── Featured section ── */
+    .featured-banner {
+      background: linear-gradient(135deg, rgba(196,98,45,0.08), rgba(92,107,58,0.06));
+      border: 1px solid rgba(196,98,45,0.2);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl) var(--space-2xl);
+      display: flex;
+      align-items: center;
+      gap: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .featured-banner .feat-icon { font-size: 2.5rem; flex-shrink: 0; }
+
+    .featured-banner h4 {
+      color: var(--clay-dark);
+      margin-bottom: 4px;
+      font-size: 0.95rem;
+    }
+
+    .featured-banner p {
+      font-family: var(--font-ui);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ── Story section ── */
+    .story-section {
+      background: var(--bark);
+      border-radius: var(--radius-xl);
+      padding: var(--space-2xl);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: var(--space-xl);
+    }
+
+    .story-section::before {
+      content: '"';
+      position: absolute;
+      top: -1rem; left: 1rem;
+      font-family: var(--font-display);
+      font-size: 12rem;
+      color: rgba(255,255,255,0.04);
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .story-section h4 {
+      color: var(--sand);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: var(--space-lg);
+      font-family: var(--font-ui);
+    }
+
+    .story-section p {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.1rem;
+      color: rgba(254,252,248,0.85);
+      line-height: 1.7;
+    }
+
+    /* ── Workshop photos grid ── */
+    .workshop-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .workshop-photo {
+      aspect-ratio: 1;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .workshop-photo img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s var(--ease-out);
+    }
+
+    .workshop-photo:hover img { transform: scale(1.07); }
+
+    /* ── Contact modal ── */
+    .message-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(42,26,14,0.55);
+      backdrop-filter: blur(6px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-xl);
+      animation: fadeIn 0.25s ease;
+    }
+
+    .message-modal {
+      background: var(--parchment);
+      border-radius: var(--radius-xl);
+      max-width: 500px;
+      width: 100%;
+      box-shadow: var(--shadow-xl);
+      animation: scaleIn 0.35s var(--ease-spring);
+    }
+
+    .message-modal-header {
+      padding: var(--space-xl) var(--space-2xl) 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .message-modal-header h3 { font-size: 1rem; }
+
+    .modal-x-btn {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--sand);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+      color: var(--text-muted);
+      transition: background var(--dur-fast), color var(--dur-fast);
+    }
+
+    .modal-x-btn:hover { background: var(--sand-dark); color: var(--text-primary); }
+
+    .message-modal-body { padding: 0 var(--space-2xl) var(--space-2xl); }
+  </style>
+</head>
+<body>
+
+<!-- ───────────── NAVBAR ───────────── -->
+<nav class="navbar scrolled" id="navbar">
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-icon">🪡</span>
+      <span class="logo-text">CraftNest</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="marketplace.html">Explore</a></li>
+      <li><a href="../index.html#sellers">Artisans</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="cart.html" class="nav-cart-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-badge" id="cartBadge">0</span>
+      </a>
+      <a href="auth.html" class="btn-nav-login" id="navAuthBtn">Sign in</a>
+      <a href="auth.html?mode=register" class="btn-nav-join" id="navJoinBtn">Join Free</a>
+    </div>
+    <button class="nav-hamburger" id="hamburger"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="seller-profile-page">
+
+  <!-- ── BANNER ── -->
+  <div class="shop-banner" id="shopBanner">
+    <img class="shop-banner-img" id="bannerImg" src="" alt="Shop banner" />
+  </div>
+
+  <!-- ── PROFILE HEADER ── -->
+  <div class="profile-header-card">
+    <div class="profile-header-inner">
+
+      <div class="profile-avatar-wrap">
+        <img class="profile-avatar" id="profileAvatar" src="" alt="Seller" />
+        <div class="profile-verified" id="verifiedBadge" title="Verified seller" style="display:none;">✓</div>
+      </div>
+
+      <div class="profile-meta">
+        <h1 class="profile-name" id="shopName">Loading…</h1>
+        <div class="profile-location">
+          <span>📍</span>
+          <span id="shopLocation">—</span>
+          <span style="color:var(--border-strong);">·</span>
+          <span style="color:var(--clay);font-weight:500;" id="memberSince">Member since 2023</span>
+        </div>
+        <div class="profile-tags" id="craftTags"></div>
+      </div>
+
+      <div class="profile-actions">
+        <button class="btn-follow" id="followBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span id="followBtnText">Follow</span>
+        </button>
+        <button class="btn-message" id="messageBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Message Maker
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── STATS STRIP ── -->
+  <div class="stats-strip">
+    <div class="stats-inner">
+      <div class="stat-cell">
+        <strong id="statSales">0</strong>
+        <span>Total Sales</span>
+      </div>
+      <div class="stat-cell">
+        <strong id="statRating">—</strong>
+        <span>Avg. Rating</span>
+      </div>
+      <div class="stat-cell">
+        <strong id="statReviews">0</strong>
+        <span>Reviews</span>
+      </div>
+      <div class="stat-cell">
+        <strong id="statProducts">0</strong>
+        <span>Active Listings</span>
+      </div>
+      <div class="stat-cell">
+        <strong id="statResponse">< 1 day</strong>
+        <span>Response Time</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROFILE BODY ── -->
+  <div class="profile-body">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="profile-sidebar">
+
+      <!-- About -->
+      <div class="sidebar-card">
+        <h4>About this maker</h4>
+        <p id="shopBio">Loading…</p>
+      </div>
+
+      <!-- Workshop photos -->
+      <div class="sidebar-card" id="workshopPhotosCard">
+        <h4>From the workshop</h4>
+        <div class="workshop-grid" id="workshopGrid"></div>
+      </div>
+
+      <!-- Policies -->
+      <div class="sidebar-card">
+        <h4>Shop Policies</h4>
+        <div>
+          <div class="policy-item">
+            <span class="policy-icon">📦</span>
+            <span>Ships within <strong>3–7</strong> business days</span>
+          </div>
+          <div class="policy-item">
+            <span class="policy-icon">🔄</span>
+            <span>Returns accepted within <strong>7 days</strong> if item not as described</span>
+          </div>
+          <div class="policy-item">
+            <span class="policy-icon">✏️</span>
+            <span>Custom orders welcome — message before purchasing</span>
+          </div>
+          <div class="policy-item">
+            <span class="policy-icon">💬</span>
+            <span>Responds to messages usually within 24 hours</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social -->
+      <div class="sidebar-card" id="socialCard">
+        <h4>Find them online</h4>
+        <div class="social-links" id="socialLinks"></div>
+      </div>
+
+    </aside>
+
+    <!-- ── MAIN CONTENT ── -->
+    <div class="profile-content">
+
+      <!-- Featured banner (for top sellers) -->
+      <div class="featured-banner" id="featuredBanner" style="display:none;">
+        <span class="feat-icon">⭐</span>
+        <div>
+          <h4>CraftNest Featured Maker</h4>
+          <p>This seller has been hand-picked by our team for exceptional quality, craftsmanship, and customer care.</p>
+        </div>
+      </div>
+
+      <!-- Maker story -->
+      <div class="story-section" id="storySection">
+        <h4>Maker's Story</h4>
+        <p id="shopStory">Loading…</p>
+      </div>
+
+      <!-- Tab toolbar -->
+      <div class="shop-toolbar">
+        <div class="shop-toolbar-tabs" role="tablist">
+          <button class="shop-tab active" data-stab="products">Products</button>
+          <button class="shop-tab" data-stab="reviews">Reviews</button>
+          <button class="shop-tab" data-stab="about">Full Story</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:var(--space-md);">
+          <select class="sort-select" id="shopSortSelect">
+            <option value="popular">Most Popular</option>
+            <option value="newest">Newest First</option>
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- PRODUCTS TAB -->
+      <div id="stabProducts">
+        <div class="products-grid" id="shopProductsGrid" style="grid-template-columns:repeat(3,1fr);">
+        </div>
+        <div class="load-more-wrap" id="shopLoadMore" style="display:none;">
+          <button class="btn-load-more" id="shopLoadMoreBtn">Load More Products</button>
+        </div>
+      </div>
+
+      <!-- REVIEWS TAB -->
+      <div id="stabReviews" style="display:none;">
+        <div class="shop-reviews-header">
+          <div class="shop-avg-score">
+            <span class="big-num" id="shopAvgRating">4.9</span>
+            <span class="stars-disp" id="shopStars">★★★★★</span>
+            <span class="rev-count" id="shopRevCount">128 reviews</span>
+          </div>
+          <div class="rating-bars" style="flex:1;" id="shopRatingBars">
+            <div class="rating-bar-row"><span class="rating-bar-label">5</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:82%"></div></div><span class="rating-bar-count">82%</span></div>
+            <div class="rating-bar-row"><span class="rating-bar-label">4</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:13%"></div></div><span class="rating-bar-count">13%</span></div>
+            <div class="rating-bar-row"><span class="rating-bar-label">3</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:4%"></div></div><span class="rating-bar-count">4%</span></div>
+            <div class="rating-bar-row"><span class="rating-bar-label">2</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:1%"></div></div><span class="rating-bar-count">1%</span></div>
+            <div class="rating-bar-row"><span class="rating-bar-label">1</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:0%"></div></div><span class="rating-bar-count">0%</span></div>
+          </div>
+        </div>
+        <div id="shopReviewsList"></div>
+      </div>
+
+      <!-- ABOUT / FULL STORY TAB -->
+      <div id="stabAbout" style="display:none;">
+        <div style="max-width:640px;">
+          <p id="shopFullStory" style="font-size:1rem;line-height:1.85;color:var(--text-secondary);"></p>
+
+          <div style="margin-top:var(--space-2xl);padding-top:var(--space-2xl);border-top:1px solid var(--border);">
+            <h3 style="font-size:1rem;margin-bottom:var(--space-lg);">Process & Materials</h3>
+            <div id="shopProcess" style="display:flex;flex-direction:column;gap:var(--space-lg);"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /seller-profile-page -->
+
+<!-- ── Message Modal ── -->
+<div class="message-modal-backdrop" id="messageModalBackdrop" style="display:none;">
+  <div class="message-modal">
+    <div class="message-modal-header">
+      <h3>Message <span id="modalSellerName">the maker</span></h3>
+      <button class="modal-x-btn" id="closeMessageModal">✕</button>
+    </div>
+    <div class="message-modal-body">
+      <form id="messageForm" style="display:flex;flex-direction:column;gap:var(--space-lg);">
+        <div class="form-group">
+          <label class="form-label">Subject</label>
+          <input class="form-input" type="text" id="msgSubject" placeholder="Custom order enquiry / Question about a product…" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-textarea" id="msgBody" placeholder="Hi! I was wondering if you could make…" rows="5"></textarea>
+        </div>
+        <div style="display:flex;gap:var(--space-md);">
+          <button type="submit" class="btn-primary" style="flex:1;">Send Message</button>
+          <button type="button" class="btn-ghost" id="cancelMessage">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom nav -->
+<nav class="bottom-nav">
+  <a href="../index.html" class="bottom-nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home
+  </a>
+  <a href="marketplace.html" class="bottom-nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Explore
+  </a>
+  <a href="cart.html" class="bottom-nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Cart
+  </a>
+  <a href="auth.html" class="bottom-nav-item">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Account
+  </a>
+</nav>
+
+<script type="module">
+import { getShop, watchAuth, getCurrentUserProfile, addToCart, showToast } from '../firebase-config.js';
+
+/* ══════════════════════════════════════════
+   DEMO SELLER DATA
+   In production: const shop = await getShop(sellerId)
+══════════════════════════════════════════ */
+const SELLERS = {
+  seller1: {
+    id: 'seller1',
+    shopName: "Priya's Pottery",
+    sellerId: 'seller1',
+    location: 'Jaipur, India',
+    memberSince: 'January 2021',
+    avatarURL: 'https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=200&q=80',
+    bannerURL:  'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=1200&q=70',
+    bio: 'Wheel-thrown stoneware inspired by Rajasthani landscapes and ancient folk motifs. Each piece is made in my small studio in the old city of Jaipur.',
+    story: 'I grew up watching my grandmother shape clay by hand — not on a wheel, but with her palms and a smooth stone. She never called it art. She called it necessary. I\'ve spent fifteen years trying to make pots that feel that honest.\n\nMy work sits somewhere between traditional Rajasthani blue pottery techniques and contemporary Scandinavian minimalism. I use locally sourced stoneware, fire at cone 6, and glaze everything in my own studio using recipes I\'ve developed over years of testing.',
+    fullStory: 'My journey began in the back lanes of Jaipur\'s old city, where the smell of wet clay and burning wood was simply part of the air. My grandmother — Nani — never had a kiln. She fired her pots in an earthen pit dug in the courtyard, lined with dried cow-dung cakes. The results were unpredictable, beautiful, and entirely hers.\n\nI studied fine arts in Delhi, then spent three years apprenticing under a master potter in Stoke-on-Trent, England — learning the industrial vocabulary of clay so I could deliberately break it. Coming home, I built my first wheel from scrap metal and a salvaged motor. It wobbled terribly.\n\nToday my studio is a converted stable in the old quarter. I work six mornings a week. I throw in the morning when my hands are fresh. I trim and carve in the afternoons. Each piece takes between three days and two weeks from first pull to final firing. I sell globally, but I ship slowly — because I believe the things we wait for mean more.',
+    craftTypes: ['Wheel-throwing', 'Stoneware', 'Celadon glazing', 'Folk motifs'],
+    totalSales: 847,
+    rating: 4.97,
+    reviewCount: 128,
+    productCount: 23,
+    responseTime: '< 12 hours',
+    isVerified: true,
+    isFeatured: true,
+    socialLinks: {
+      instagram: 'https://instagram.com',
+      pinterest:  'https://pinterest.com',
+      website:    'https://example.com',
+    },
+    process: [
+      { icon:'🏺', title:'Sourcing', desc:'All clay is sourced from a family-run mine in Rajasthan. I visit twice a year to select the batch myself — the iron content, the texture, the colour when wet.' },
+      { icon:'🔥', title:'Firing', desc:'I fire to cone 6 (approximately 1222°C) in an electric kiln. Each load takes 10 hours to fire and 16 hours to cool. Rushing either kills the glaze.' },
+      { icon:'✍️', title:'Finishing', desc:'Folk motifs are carved by hand before the first bisque firing. No stamps, no stencils. This is why no two pieces are ever exactly the same.' },
+    ],
+    workshopPhotos: [
+      'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=300&q=70',
+      'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=300&q=70',
+      'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=300&q=70',
+      'https://images.unsplash.com/photo-1603006905003-be475563bc59?w=300&q=70',
+      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&q=70',
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&q=70',
+    ],
+    products: [
+      { id:'p1',  title:'Moon Phase Ceramic Mug',    price:1850, img:'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=400&q=80', rating:4.9, reviews:128, tag:'Bestseller' },
+      { id:'p9',  title:'Stoneware Espresso Set',    price:3200, img:'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&q=80', rating:4.9, reviews:211, tag:null },
+      { id:'p17', title:'Raku-fired Sake Set',        price:4800, img:'https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=400&q=80', rating:5.0, reviews:29,  tag:'New' },
+      { id:'pb1', title:'Hand-carved Butter Dish',   price:2100, img:'https://images.unsplash.com/photo-1603006905003-be475563bc59?w=400&q=80', rating:4.8, reviews:74,  tag:null },
+      { id:'pb2', title:'Speckled Bud Vase',         price:1200, img:'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80', rating:4.7, reviews:55,  tag:'Sale' },
+      { id:'pb3', title:'Folk Motif Dinner Plate',   price:2800, img:'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=80', rating:5.0, reviews:18,  tag:'Custom' },
+    ],
+    reviews: [
+      { name:'Neha R.',  avatar:'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=60&q=80', rating:5, date:'12 Mar 2025', product:'Moon Phase Mug',      text:'The most beautiful mug I own. Priya included a handwritten note about the clay used in this batch. That personal touch says everything about who she is as a maker.' },
+      { name:'James T.', avatar:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&q=80', rating:5, date:'28 Feb 2025', product:'Stoneware Espresso Set', text:'Packed with such care — each cup wrapped individually in recycled paper. They look even better in person. My morning espresso ritual just became a ceremony.' },
+      { name:'Aisha M.', avatar:'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=60&q=80', rating:4, date:'15 Jan 2025', product:'Raku-fired Sake Set',   text:'Stunning piece. Took about 10 days to arrive in London but well worth the wait. Priya responded quickly to my messages. Will definitely order again.' },
+      { name:'Ravi K.',  avatar:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&q=80', rating:5, date:'2 Jan 2025',  product:'Hand-carved Butter Dish', text:'I bought this as a wedding gift and the couple cried when they opened it. No other gift got that reaction. Exquisite.' },
+    ],
+  },
+
+  seller2: {
+    id: 'seller2',
+    shopName: "Marco Forges",
+    sellerId: 'seller2',
+    location: 'Florence, Italy',
+    memberSince: 'March 2020',
+    avatarURL: 'https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=200&q=80',
+    bannerURL:  'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=1200&q=70',
+    bio: 'Third-generation blacksmith crafting heirloom jewelry from reclaimed metals in the heart of Florence.',
+    story: 'My grandfather shod horses. My father made gates and railings for Renaissance palazzos. I make rings that people wear for the rest of their lives. The fire is the same.',
+    fullStory: 'Three generations of metalwork run in my blood. I learned to hold a hammer before I could write my name — standing on an old wooden crate to reach the anvil in my grandfather\'s forge in the Oltrarno district of Florence.\n\nI spent years in the building trade, fabricating ironwork for historic restorations across Tuscany. Beautiful work, invisible work. Then a friend asked me to make her an engagement ring. I\'d never made jewelry before. I worked for two weeks on something simple, hammering, refining, polishing. She wore it to her wedding and three people asked her where it was from.\n\nThat was twelve years ago. Today I work from the same district, in a converted workshop behind a 14th-century church. I use reclaimed silver and gold when possible — old jewelry melted down, given a second life in a new form. I take custom commissions for wedding rings, anniversary gifts, and pieces that are meant to outlast their owners.',
+    craftTypes: ['Blacksmithing', 'Sterling silver', 'Custom engraving', 'Reclaimed metals'],
+    totalSales: 312,
+    rating: 5.0,
+    reviewCount: 57,
+    productCount: 11,
+    responseTime: '< 1 day',
+    isVerified: true,
+    isFeatured: false,
+    socialLinks: { instagram:'https://instagram.com', website:'https://example.com' },
+    process: [
+      { icon:'♻️', title:'Reclaimed Metal', desc:'I source reclaimed sterling silver from antique dealers across Tuscany — old cutlery, broken pieces, items beyond repair. Melted down and reborn.' },
+      { icon:'🔨', title:'Hand Forging',    desc:'Each piece is hammered individually. I don\'t cast or use molds. The texture you see is the result of thousands of individual hammer strikes.' },
+      { icon:'💎', title:'Finishing',       desc:'Final polishing by hand with progressively finer compounds. Custom engravings are done with a hand-held graver — each letter cut by eye.' },
+    ],
+    workshopPhotos: [
+      'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=300&q=70',
+      'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=300&q=70',
+      'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=300&q=70',
+    ],
+    products: [
+      { id:'p2',  title:'Hand-forged Silver Ring',   price:4200, img:'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&q=80', rating:5.0, reviews:57,  tag:'Custom' },
+      { id:'p10', title:'Hammered Copper Earrings',  price:1800, img:'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=400&q=80', rating:4.8, reviews:142, tag:'New' },
+      { id:'p20', title:'Minimalist Gold Leaf Ring', price:3500, img:'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=400&q=80', rating:4.9, reviews:61,  tag:null },
+    ],
+    reviews: [
+      { name:'Aisha T.', avatar:'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=60&q=80', rating:5, date:'18 Mar 2025', product:'Hand-forged Silver Ring', text:'Found a one-of-a-kind ring for my wedding. Marco customised it with our initials and a small moon on the inside band. I get compliments on it every single day.' },
+      { name:'Sophie L.',avatar:'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=60&q=80', rating:5, date:'5 Feb 2025',  product:'Hammered Copper Earrings', text:'Ordered these as a birthday gift. The recipient was speechless. The detail on each earring is remarkable for something hand-forged. Extraordinary.' },
+    ],
+  },
+};
+
+/* ══════════════════════════════════════════
+   LOAD SELLER
+══════════════════════════════════════════ */
+const urlParams = new URLSearchParams(window.location.search);
+const sellerId  = urlParams.get('id') || 'seller1';
+const seller    = SELLERS[sellerId] || SELLERS['seller1'];
+
+function renderSeller(s) {
+  document.title = `${s.shopName} — CraftNest`;
+
+  /* Banner & avatar */
+  document.getElementById('bannerImg').src    = s.bannerURL;
+  document.getElementById('profileAvatar').src = s.avatarURL;
+  if (s.isVerified) document.getElementById('verifiedBadge').style.display = 'flex';
+
+  /* Header meta */
+  document.getElementById('shopName').textContent     = s.shopName;
+  document.getElementById('shopLocation').textContent = s.location;
+  document.getElementById('memberSince').textContent  = `Since ${s.memberSince}`;
+
+  /* Craft tags */
+  const tagsEl = document.getElementById('craftTags');
+  s.craftTypes.forEach(t => {
+    const tag = document.createElement('span');
+    tag.className = 'craft-tag';
+    tag.textContent = t;
+    tagsEl.appendChild(tag);
+  });
+
+  /* Stats */
+  animateCount(document.getElementById('statSales'),    s.totalSales);
+  document.getElementById('statRating').textContent   = s.rating.toFixed(2) + ' ★';
+  animateCount(document.getElementById('statReviews'),  s.reviewCount);
+  animateCount(document.getElementById('statProducts'), s.productCount);
+  document.getElementById('statResponse').textContent = s.responseTime;
+
+  /* Bio */
+  document.getElementById('shopBio').textContent      = s.bio;
+  document.getElementById('shopStory').textContent    = `"${s.story}"`;
+  document.getElementById('shopFullStory').innerHTML  =
+    s.fullStory.replace(/\n\n/g, '</p><p style="margin-top:1.25rem;">');
+
+  /* Featured banner */
+  if (s.isFeatured) document.getElementById('featuredBanner').style.display = 'flex';
+
+  /* Process steps */
+  const procEl = document.getElementById('shopProcess');
+  procEl.innerHTML = '';
+  s.process.forEach(step => {
+    procEl.innerHTML += `
+      <div style="display:flex;gap:var(--space-lg);padding:var(--space-lg);background:var(--parchment);border:1px solid var(--border);border-radius:var(--radius-lg);">
+        <span style="font-size:1.8rem;flex-shrink:0;">${step.icon}</span>
+        <div>
+          <strong style="font-family:var(--font-ui);font-size:0.9rem;display:block;margin-bottom:4px;color:var(--text-primary);">${step.title}</strong>
+          <p style="font-size:0.875rem;color:var(--text-muted);line-height:1.6;">${step.desc}</p>
+        </div>
+      </div>`;
+  });
+
+  /* Workshop photos */
+  const wGrid = document.getElementById('workshopGrid');
+  s.workshopPhotos.forEach(src => {
+    const div = document.createElement('div');
+    div.className = 'workshop-photo';
+    div.innerHTML = `<img src="${src}" alt="Workshop" loading="lazy" />`;
+    wGrid.appendChild(div);
+  });
+
+  /* Social links */
+  const socEl = document.getElementById('socialLinks');
+  const icons = { instagram:'📸', pinterest:'📌', website:'🌐', twitter:'𝕏' };
+  const labels = { instagram:'Instagram', pinterest:'Pinterest', website:'Website', twitter:'Twitter/X' };
+  Object.entries(s.socialLinks || {}).forEach(([platform, url]) => {
+    socEl.innerHTML += `
+      <a href="${url}" target="_blank" rel="noopener" class="social-link">
+        <span class="social-link-icon">${icons[platform] || '🔗'}</span>
+        ${labels[platform] || platform}
+        <svg style="margin-left:auto;opacity:0.4" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </a>`;
+  });
+
+  /* Reviews */
+  document.getElementById('shopAvgRating').textContent = s.rating.toFixed(1);
+  document.getElementById('shopRevCount').textContent  = `${s.reviewCount} reviews`;
+  const stars5 = Math.round(s.rating);
+  document.getElementById('shopStars').textContent     = '★'.repeat(stars5) + '☆'.repeat(5-stars5);
+
+  const revList = document.getElementById('shopReviewsList');
+  s.reviews.forEach(r => {
+    revList.innerHTML += `
+      <div class="review-card">
+        <div class="review-header">
+          <div class="reviewer-info">
+            <img class="reviewer-avatar" src="${r.avatar}" alt="${r.name}" />
+            <div>
+              <span class="reviewer-name">${r.name}</span>
+              <span class="reviewer-date">${r.date} · <em style="color:var(--clay);font-style:normal;">${r.product}</em></span>
+            </div>
+          </div>
+          <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+        </div>
+        <p class="review-text">${r.text}</p>
+      </div>`;
+  });
+
+  /* Modal seller name */
+  document.getElementById('modalSellerName').textContent = s.shopName;
+
+  /* Products */
+  renderShopProducts(s.products);
+}
+
+/* ── Render Products ── */
+function renderShopProducts(products, sort = 'popular') {
+  const sorted = [...products].sort((a, b) => {
+    if (sort === 'newest')     return b.id.localeCompare(a.id);
+    if (sort === 'price_asc')  return a.price - b.price;
+    if (sort === 'price_desc') return b.price - a.price;
+    return b.reviews - a.reviews; // popular
+  });
+
+  const grid = document.getElementById('shopProductsGrid');
+  grid.innerHTML = '';
+
+  sorted.forEach((p, i) => {
+    const card = document.createElement('a');
+    card.href  = `product.html?id=${p.id}`;
+    card.className = 'product-card reveal';
+    card.innerHTML = `
+      <div class="product-img-wrap">
+        <img src="${p.img}" alt="${p.title}" loading="lazy" />
+        ${p.tag ? `<span class="product-tag">${p.tag}</span>` : ''}
+        <button class="product-quick-add" onclick="event.preventDefault();handleAddToCart('${p.id}','${p.title}')">+ Add to Cart</button>
+      </div>
+      <div class="product-info">
+        <span class="product-seller">${seller.shopName}</span>
+        <h3 class="product-title">${p.title}</h3>
+        <div class="product-meta">
+          <span class="product-rating">★ ${p.rating} <span class="review-count">(${p.reviews})</span></span>
+          <span class="product-price">₹${p.price.toLocaleString('en-IN')}</span>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+    setTimeout(() => card.classList.add('revealed'), i * 70);
+  });
+}
+
+/* ── Sort ── */
+document.getElementById('shopSortSelect').addEventListener('change', e => {
+  renderShopProducts(seller.products, e.target.value);
+});
+
+/* ── Tabs ── */
+document.querySelectorAll('.shop-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    ['Products','Reviews','About'].forEach(name => {
+      document.getElementById(`stab${name}`).style.display =
+        tab.dataset.stab === name.toLowerCase() ? 'block' : 'none';
+    });
+  });
+});
+
+/* ── Follow ── */
+let following = false;
+document.getElementById('followBtn').addEventListener('click', () => {
+  following = !following;
+  const btn  = document.getElementById('followBtn');
+  const text = document.getElementById('followBtnText');
+  btn.classList.toggle('following', following);
+  text.textContent = following ? 'Following ♥' : 'Follow';
+  showToast(following ? `Following ${seller.shopName}!` : 'Unfollowed', following ? 'success' : 'info');
+});
+
+/* ── Message ── */
+const backdrop = document.getElementById('messageModalBackdrop');
+document.getElementById('messageBtn').addEventListener('click', () => {
+  backdrop.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+});
+
+function closeModal() {
+  backdrop.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+document.getElementById('closeMessageModal').addEventListener('click', closeModal);
+document.getElementById('cancelMessage').addEventListener('click', closeModal);
+backdrop.addEventListener('click', e => { if (e.target === backdrop) closeModal(); });
+
+document.getElementById('messageForm').addEventListener('submit', e => {
+  e.preventDefault();
+  showToast('Message sent! The maker will reply within 24 hours.', 'success');
+  closeModal();
+  document.getElementById('msgSubject').value = '';
+  document.getElementById('msgBody').value    = '';
+});
+
+/* ── Add to cart ── */
+window.handleAddToCart = async (productId, title) => {
+  try { await addToCart(productId, 1); } catch {
+    let cart = JSON.parse(localStorage.getItem('cn_cart_v2') || '{"items":[]}');
+    const idx = cart.items.findIndex(i => i.productId === productId);
+    if (idx > -1) cart.items[idx].quantity++;
+    else cart.items.push({ productId, quantity:1, variant:null, addedAt:Date.now() });
+    localStorage.setItem('cn_cart_v2', JSON.stringify(cart));
+  }
+  showToast(`"${title}" added to cart 🛍️`, 'success');
+  updateCartBadge();
+};
+
+/* ── Counter animation ── */
+function animateCount(el, target) {
+  const dur  = 1800;
+  const step = target / (dur / 16);
+  let cur    = 0;
+  const tick = () => {
+    cur = Math.min(cur + step, target);
+    el.textContent = Math.floor(cur).toLocaleString();
+    if (cur < target) requestAnimationFrame(tick);
+  };
+  setTimeout(() => requestAnimationFrame(tick), 300);
+}
+
+/* ── Cart badge ── */
+function updateCartBadge() {
+  const cart = JSON.parse(localStorage.getItem('cn_cart_v2') || '{"items":[]}');
+  document.getElementById('cartBadge').textContent = cart.items.reduce((s,i) => s + i.quantity, 0);
+}
+updateCartBadge();
+
+/* ── Auth ── */
+watchAuth(async user => {
+  if (user) {
+    const profile = await getCurrentUserProfile();
+    const navAuth = document.getElementById('navAuthBtn');
+    const navJoin = document.getElementById('navJoinBtn');
+    if (navAuth) { navAuth.textContent = profile?.displayName?.split(' ')[0] || 'Account'; navAuth.href = '#'; }
+    if (navJoin) navJoin.style.display = 'none';
+  }
+});
+
+/* ── Hamburger ── */
+document.getElementById('hamburger').addEventListener('click', function() {
+  this.classList.toggle('open');
+});
+
+/* ── Init ── */
+renderSeller(seller);
+</script>
+
+</body>
+</html>
