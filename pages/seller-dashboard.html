@@ -1,1 +1,1566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seller Dashboard — CraftNest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles/main.css" />
+  <link rel="stylesheet" href="../styles/components.css" />
+  <style>
+    /* ── Dashboard Layout ── */
+    body { background: var(--linen); }
 
+    .dash-layout {
+      display: flex;
+      min-height: 100svh;
+      padding-top: var(--nav-h);
+    }
+
+    /* ── Sidebar Nav ── */
+    .dash-sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: var(--bark);
+      position: fixed;
+      top: var(--nav-h);
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      transition: transform var(--dur-slow) var(--ease-out);
+    }
+
+    .dash-sidebar-inner {
+      padding: var(--space-xl) 0;
+      flex: 1;
+    }
+
+    .dash-nav-section {
+      padding: 0 var(--space-md) var(--space-md);
+    }
+
+    .dash-nav-section-label {
+      font-family: var(--font-ui);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      padding: 0 var(--space-md);
+      margin-bottom: var(--space-sm);
+      margin-top: var(--space-md);
+    }
+
+    .dash-nav-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: 0.65rem var(--space-lg);
+      border-radius: var(--radius-md);
+      font-family: var(--font-ui);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: rgba(255,255,255,0.55);
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      text-decoration: none;
+      transition: background var(--dur-fast), color var(--dur-fast);
+      position: relative;
+    }
+
+    .dash-nav-link:hover {
+      background: rgba(255,255,255,0.07);
+      color: rgba(255,255,255,0.9);
+    }
+
+    .dash-nav-link.active {
+      background: rgba(196,98,45,0.2);
+      color: var(--clay-light);
+    }
+
+    .dash-nav-link .nav-icon { font-size: 1rem; flex-shrink: 0; width: 20px; text-align: center; }
+
+    .dash-nav-badge {
+      margin-left: auto;
+      background: var(--clay);
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      min-width: 18px; height: 18px;
+      border-radius: 9px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+    }
+
+    .dash-sidebar-footer {
+      padding: var(--space-lg);
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .dash-seller-info {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-md);
+    }
+
+    .dash-seller-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(255,255,255,0.15);
+    }
+
+    .dash-seller-name {
+      font-family: var(--font-ui);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--warm-white);
+      display: block;
+    }
+
+    .dash-seller-role {
+      font-family: var(--font-ui);
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* ── Main content ── */
+    .dash-main {
+      flex: 1;
+      margin-left: 240px;
+      padding: var(--space-2xl);
+      min-width: 0;
+    }
+
+    @media (max-width: 960px) {
+      .dash-sidebar { transform: translateX(-100%); }
+      .dash-sidebar.open { transform: translateX(0); z-index: 1200; }
+      .dash-main { margin-left: 0; }
+    }
+
+    /* ── Panel visibility ── */
+    .dash-panel { display: none; }
+    .dash-panel.active { display: block; animation: fadeIn 0.3s ease; }
+
+    /* ── Page header ── */
+    .dash-page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-lg);
+      margin-bottom: var(--space-2xl);
+      flex-wrap: wrap;
+    }
+
+    .dash-page-title { font-size: clamp(1.4rem, 3vw, 1.8rem); }
+    .dash-page-sub   { font-family: var(--font-ui); font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* ── Stats grid ── */
+    .stats-grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-lg);
+      margin-bottom: var(--space-2xl);
+    }
+
+    @media (max-width: 1100px) { .stats-grid-4 { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px)  { .stats-grid-4 { grid-template-columns: 1fr; } }
+
+    /* ── Chart area ── */
+    .chart-section {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: var(--space-xl);
+      margin-bottom: var(--space-2xl);
+    }
+
+    @media (max-width: 960px) { .chart-section { grid-template-columns: 1fr; } }
+
+    .chart-card {
+      background: var(--parchment);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+    }
+
+    .chart-card h4 {
+      font-size: 0.9rem;
+      margin-bottom: var(--space-xl);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chart-card h4 span {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    /* Mini bar chart */
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 120px;
+    }
+
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .bar {
+      width: 100%;
+      border-radius: 4px 4px 0 0;
+      background: var(--clay);
+      opacity: 0.7;
+      transition: opacity var(--dur-fast), height 1s var(--ease-out);
+      position: relative;
+      cursor: pointer;
+    }
+
+    .bar:hover { opacity: 1; }
+
+    .bar-label {
+      font-family: var(--font-ui);
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .bar-value {
+      font-family: var(--font-ui);
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 2px;
+    }
+
+    /* Donut chart (CSS) */
+    .donut-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-lg);
+    }
+
+    .donut {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: conic-gradient(
+        var(--clay) 0% 42%,
+        var(--moss) 42% 65%,
+        var(--ochre) 65% 79%,
+        var(--bark-light) 79% 90%,
+        var(--sand-dark) 90% 100%
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .donut-hole {
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      background: var(--parchment);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .donut-hole strong {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+
+    .donut-hole span {
+      font-family: var(--font-ui);
+      font-size: 0.55rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .donut-legend {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      width: 100%;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-family: var(--font-ui);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .legend-pct {
+      margin-left: auto;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* ── Recent orders table ── */
+    .table-card {
+      background: var(--parchment);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      margin-bottom: var(--space-xl);
+    }
+
+    .table-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-lg) var(--space-xl);
+      border-bottom: 1px solid var(--border);
+      background: var(--linen);
+    }
+
+    .table-card-header h4 { font-size: 0.9rem; }
+
+    .table-wrapper { overflow-x: auto; }
+
+    /* ── Products grid panel ── */
+    .products-dash-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-lg);
+    }
+
+    @media (max-width: 960px)  { .products-dash-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px)  { .products-dash-grid { grid-template-columns: 1fr; } }
+
+    .dash-product-card {
+      background: var(--parchment);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: box-shadow var(--dur-med), transform var(--dur-med) var(--ease-spring);
+    }
+
+    .dash-product-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+
+    .dash-product-img {
+      width: 100%; aspect-ratio: 1;
+      object-fit: cover;
+      background: var(--sand);
+      display: block;
+    }
+
+    .dash-product-info {
+      padding: var(--space-md);
+    }
+
+    .dash-product-name {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .dash-product-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-ui);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: var(--space-md);
+    }
+
+    .dash-product-price {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .dash-product-actions {
+      display: flex;
+      gap: var(--space-sm);
+      border-top: 1px solid var(--border);
+      padding-top: var(--space-md);
+    }
+
+    .dash-product-btn {
+      flex: 1;
+      padding: 0.45rem;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--warm-white);
+      color: var(--text-secondary);
+      transition: background var(--dur-fast), color var(--dur-fast), border-color var(--dur-fast);
+      text-align: center;
+    }
+
+    .dash-product-btn:hover { background: var(--clay); color: white; border-color: var(--clay); }
+    .dash-product-btn.danger:hover { background: #C94040; border-color: #C94040; color: white; }
+
+    /* ── Add product form ── */
+    .add-product-form {
+      background: var(--parchment);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-2xl);
+    }
+
+    .form-section-title {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-lg);
+      margin-bottom: var(--space-xl);
+    }
+
+    @media (max-width: 640px) { .form-grid-2 { grid-template-columns: 1fr; } }
+
+    /* ── Profile edit form ── */
+    .profile-form-layout {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: var(--space-2xl);
+    }
+
+    @media (max-width: 768px) { .profile-form-layout { grid-template-columns: 1fr; } }
+
+    .avatar-upload-zone {
+      text-align: center;
+    }
+
+    .avatar-preview {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--border);
+      margin: 0 auto var(--space-md);
+      display: block;
+      background: var(--sand);
+    }
+
+    /* ── Earnings panel ── */
+    .earnings-period-tabs {
+      display: flex;
+      gap: 2px;
+      background: var(--sand);
+      border-radius: var(--radius-full);
+      padding: 3px;
+      width: fit-content;
+      margin-bottom: var(--space-xl);
+    }
+
+    .earnings-tab {
+      padding: 0.4rem 1rem;
+      border-radius: var(--radius-full);
+      font-family: var(--font-ui);
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      border: none;
+      background: none;
+      transition: background var(--dur-med), color var(--dur-med);
+    }
+
+    .earnings-tab.active {
+      background: var(--parchment);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .earnings-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-lg);
+      margin-bottom: var(--space-2xl);
+    }
+
+    @media (max-width: 640px) { .earnings-summary-grid { grid-template-columns: 1fr; } }
+
+    .earnings-card {
+      background: var(--parchment);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      text-align: center;
+    }
+
+    .earnings-card .label {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: block;
+      margin-bottom: var(--space-sm);
+    }
+
+    .earnings-card .amount {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .earnings-card .change {
+      font-family: var(--font-ui);
+      font-size: 0.75rem;
+    }
+
+    /* Mobile sidebar overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(42,26,14,0.5);
+      z-index: 1100;
+    }
+
+    @media (max-width: 960px) { .sidebar-overlay { display: none; } }
+    .sidebar-overlay.show { display: block; }
+
+    /* Mobile dash nav toggle */
+    .dash-mobile-toggle {
+      display: none;
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: var(--bark);
+      color: white;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: var(--shadow-lg);
+      cursor: pointer;
+      border: none;
+      z-index: 900;
+    }
+
+    @media (max-width: 960px) { .dash-mobile-toggle { display: flex; } }
+
+    /* Payout status */
+    .payout-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md) 0;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-ui);
+      font-size: 0.85rem;
+    }
+
+    .payout-row:last-child { border-bottom: none; }
+    .payout-amount { margin-left: auto; font-weight: 600; color: var(--text-primary); }
+  </style>
+</head>
+<body>
+
+<!-- ───────────── TOP NAVBAR ───────────── -->
+<nav class="navbar scrolled" id="navbar" style="z-index:200;">
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-icon">🪡</span>
+      <span class="logo-text">CraftNest</span>
+    </a>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:var(--space-md);">
+      <a href="marketplace.html" style="font-family:var(--font-ui);font-size:0.82rem;color:var(--text-muted);">← Back to Marketplace</a>
+      <a href="seller-profile.html?id=seller1" class="btn-ghost" style="padding:0.4rem 1rem;font-size:0.82rem;">View My Shop</a>
+      <button onclick="handleLogout()" class="btn-nav-login" style="cursor:pointer;">Sign Out</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<div class="dash-layout">
+
+  <!-- ───────────── SIDEBAR ───────────── -->
+  <aside class="dash-sidebar" id="dashSidebar">
+    <div class="dash-sidebar-inner">
+
+      <div class="dash-nav-section">
+        <div class="dash-nav-section-label">Overview</div>
+        <button class="dash-nav-link active" data-panel="overview" onclick="switchPanel('overview',this)">
+          <span class="nav-icon">📊</span> Dashboard
+        </button>
+        <button class="dash-nav-link" data-panel="analytics" onclick="switchPanel('analytics',this)">
+          <span class="nav-icon">📈</span> Analytics
+        </button>
+      </div>
+
+      <div class="dash-nav-section">
+        <div class="dash-nav-section-label">Store</div>
+        <button class="dash-nav-link" data-panel="products" onclick="switchPanel('products',this)">
+          <span class="nav-icon">🏺</span> My Products
+        </button>
+        <button class="dash-nav-link" data-panel="addproduct" onclick="switchPanel('addproduct',this)">
+          <span class="nav-icon">➕</span> Add Product
+        </button>
+        <button class="dash-nav-link" data-panel="orders" onclick="switchPanel('orders',this)">
+          <span class="nav-icon">📦</span> Orders
+          <span class="dash-nav-badge" id="newOrdersBadge">3</span>
+        </button>
+      </div>
+
+      <div class="dash-nav-section">
+        <div class="dash-nav-section-label">Finance</div>
+        <button class="dash-nav-link" data-panel="earnings" onclick="switchPanel('earnings',this)">
+          <span class="nav-icon">💰</span> Earnings
+        </button>
+      </div>
+
+      <div class="dash-nav-section">
+        <div class="dash-nav-section-label">Account</div>
+        <button class="dash-nav-link" data-panel="profile" onclick="switchPanel('profile',this)">
+          <span class="nav-icon">🧑‍🎨</span> Shop Profile
+        </button>
+        <button class="dash-nav-link" data-panel="settings" onclick="switchPanel('settings',this)">
+          <span class="nav-icon">⚙️</span> Settings
+        </button>
+      </div>
+
+    </div>
+
+    <div class="dash-sidebar-footer">
+      <div class="dash-seller-info">
+        <img class="dash-seller-avatar" id="dashAvatar" src="https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=80&q=80" alt="Seller" />
+        <div>
+          <span class="dash-seller-name" id="dashSellerName">Priya's Pottery</span>
+          <span class="dash-seller-role">Verified Seller ✓</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--moss-light);display:inline-block;animation:pulse 2s infinite;"></span>
+        <span style="font-family:var(--font-ui);font-size:0.72rem;color:rgba(255,255,255,0.4);">Shop is live</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ───────────── MAIN CONTENT ───────────── -->
+  <main class="dash-main">
+
+    <!-- ══════════ OVERVIEW PANEL ══════════ -->
+    <div class="dash-panel active" id="panel-overview">
+      <div class="dash-page-header">
+        <div>
+          <h1 class="dash-page-title">Good morning, <em id="sellerFirstName">Priya</em> 🌿</h1>
+          <p class="dash-page-sub" id="todayDate">Loading date…</p>
+        </div>
+        <button class="btn-primary" onclick="switchPanel('addproduct',document.querySelector('[data-panel=addproduct]'))">
+          + Add New Product
+        </button>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="stats-grid-4">
+        <div class="dash-stat-card clay">
+          <span class="dash-stat-icon">💰</span>
+          <span class="dash-stat-value" id="statRevenue">₹0</span>
+          <span class="dash-stat-label">Revenue (month)</span>
+          <div class="dash-stat-change change-up">↑ 18% vs last month</div>
+        </div>
+        <div class="dash-stat-card moss">
+          <span class="dash-stat-icon">📦</span>
+          <span class="dash-stat-value" id="statOrders">0</span>
+          <span class="dash-stat-label">Orders (month)</span>
+          <div class="dash-stat-change change-up">↑ 12% vs last month</div>
+        </div>
+        <div class="dash-stat-card ochre">
+          <span class="dash-stat-icon">👁️</span>
+          <span class="dash-stat-value" id="statViews">0</span>
+          <span class="dash-stat-label">Product Views</span>
+          <div class="dash-stat-change change-up">↑ 34% vs last month</div>
+        </div>
+        <div class="dash-stat-card bark">
+          <span class="dash-stat-icon">⭐</span>
+          <span class="dash-stat-value" id="statRating">4.97</span>
+          <span class="dash-stat-label">Avg. Rating</span>
+          <div class="dash-stat-change change-up">↑ 0.02 this month</div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="chart-section">
+        <!-- Bar chart -->
+        <div class="chart-card">
+          <h4>Monthly Revenue <span>Last 6 months</span></h4>
+          <div class="bar-chart" id="revenueChart"></div>
+          <div style="display:flex;justify-content:space-around;margin-top:var(--space-sm);" id="revenueLabels"></div>
+        </div>
+
+        <!-- Category donut -->
+        <div class="chart-card">
+          <h4>Sales by Category</h4>
+          <div class="donut-wrap">
+            <div class="donut">
+              <div class="donut-hole">
+                <strong>847</strong>
+                <span>Total</span>
+              </div>
+            </div>
+            <div class="donut-legend">
+              <div class="legend-row"><span class="legend-dot" style="background:var(--clay)"></span>Mugs & Cups<span class="legend-pct">42%</span></div>
+              <div class="legend-row"><span class="legend-dot" style="background:var(--moss)"></span>Plates & Bowls<span class="legend-pct">23%</span></div>
+              <div class="legend-row"><span class="legend-dot" style="background:var(--ochre)"></span>Vases<span class="legend-pct">14%</span></div>
+              <div class="legend-row"><span class="legend-dot" style="background:var(--bark-light)"></span>Sets<span class="legend-pct">11%</span></div>
+              <div class="legend-row"><span class="legend-dot" style="background:var(--sand-dark)"></span>Other<span class="legend-pct">10%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent orders -->
+      <div class="table-card">
+        <div class="table-card-header">
+          <h4>Recent Orders</h4>
+          <button class="dash-nav-link" style="padding:0.3rem 0.8rem;border-radius:var(--radius-full);border:1px solid var(--border);font-size:0.78rem;color:var(--clay);" onclick="switchPanel('orders',document.querySelector('[data-panel=orders]'))">View All →</button>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table" id="recentOrdersTable">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Product</th>
+                <th>Buyer</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="recentOrdersBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Top products -->
+      <div class="table-card">
+        <div class="table-card-header"><h4>Top Performing Products</h4></div>
+        <div class="table-wrapper">
+          <table class="data-table" id="topProductsTable">
+            <thead>
+              <tr><th>Product</th><th>Views</th><th>Sales</th><th>Revenue</th><th>Rating</th><th>Status</th></tr>
+            </thead>
+            <tbody id="topProductsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ PRODUCTS PANEL ══════════ -->
+    <div class="dash-panel" id="panel-products">
+      <div class="dash-page-header">
+        <div>
+          <h1 class="dash-page-title">My Products</h1>
+          <p class="dash-page-sub">Manage all your active listings</p>
+        </div>
+        <button class="btn-primary" onclick="switchPanel('addproduct',document.querySelector('[data-panel=addproduct]'))">+ Add Product</button>
+      </div>
+      <div class="products-dash-grid" id="dashProductsGrid"></div>
+    </div>
+
+    <!-- ══════════ ADD PRODUCT PANEL ══════════ -->
+    <div class="dash-panel" id="panel-addproduct">
+      <div class="dash-page-header">
+        <div>
+          <h1 class="dash-page-title">Add New Product</h1>
+          <p class="dash-page-sub">Fill in the details below to list a new handmade item</p>
+        </div>
+      </div>
+
+      <div class="add-product-form" id="addProductForm">
+
+        <p class="form-section-title">Basic Information</p>
+        <div class="form-grid-2">
+          <div class="form-group" style="grid-column:1/-1;">
+            <label class="form-label">Product title *</label>
+            <input class="form-input" id="newTitle" type="text" placeholder="e.g. Hand-thrown Stoneware Mug with Moon Phase Carving" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Category *</label>
+            <select class="form-input form-select" id="newCategory">
+              <option value="">Select category</option>
+              <option value="ceramics">Ceramics & Pottery</option>
+              <option value="jewelry">Jewelry</option>
+              <option value="textiles">Textiles & Weaving</option>
+              <option value="woodwork">Woodwork</option>
+              <option value="candles">Candles & Soaps</option>
+              <option value="art">Art & Prints</option>
+              <option value="leather">Leather Goods</option>
+              <option value="macrame">Macramé</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price (₹) *</label>
+            <input class="form-input" id="newPrice" type="number" placeholder="1850" min="1" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Original price (optional — for sale items)</label>
+            <input class="form-input" id="newOldPrice" type="number" placeholder="2200" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Stock quantity *</label>
+            <input class="form-input" id="newStock" type="number" placeholder="5" min="1" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Processing time</label>
+            <select class="form-input form-select" id="newProcessTime">
+              <option value="1-3 days">1–3 business days</option>
+              <option value="3-7 days" selected>3–7 business days</option>
+              <option value="1-2 weeks">1–2 weeks</option>
+              <option value="2-4 weeks">2–4 weeks</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="form-section-title">Description</p>
+        <div class="form-group" style="margin-bottom:var(--space-xl);">
+          <label class="form-label">Product description *</label>
+          <textarea class="form-textarea" id="newDescription" rows="6" placeholder="Describe your product — materials, dimensions, care instructions, what makes it special…"></textarea>
+          <span class="form-hint">Tip: Buyers love hearing your process and the story behind the piece.</span>
+        </div>
+
+        <p class="form-section-title">Photos</p>
+        <div class="upload-zone" id="photoUploadZone" style="margin-bottom:var(--space-xl);">
+          <input type="file" id="photoInput" accept="image/*" multiple />
+          <span class="upload-icon">📸</span>
+          <p>Drag photos here or click to browse</p>
+          <span>JPG, PNG, WebP · Max 5MB each · Up to 10 images</span>
+        </div>
+        <div class="upload-preview-grid" id="photoPreviewGrid"></div>
+
+        <p class="form-section-title" style="margin-top:var(--space-xl);">Variants (optional)</p>
+        <div style="margin-bottom:var(--space-xl);">
+          <div class="form-group" style="margin-bottom:var(--space-md);">
+            <label class="form-label">Variant type (e.g. Size, Colour)</label>
+            <input class="form-input" id="variantType" type="text" placeholder="Size" style="max-width:200px;" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Options (comma separated)</label>
+            <input class="form-input" id="variantOptions" type="text" placeholder="Small, Medium, Large" />
+          </div>
+        </div>
+
+        <p class="form-section-title">Tags & Visibility</p>
+        <div class="form-grid-2" style="margin-bottom:var(--space-xl);">
+          <div class="form-group">
+            <label class="form-label">Special tag</label>
+            <select class="form-input form-select" id="newTag">
+              <option value="">None</option>
+              <option value="Bestseller">Bestseller</option>
+              <option value="New">New</option>
+              <option value="Sale">Sale</option>
+              <option value="Custom">Accepts Custom Orders</option>
+              <option value="Eco">Eco Friendly</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Listing status</label>
+            <select class="form-input form-select" id="newStatus">
+              <option value="active">Active (visible to buyers)</option>
+              <option value="draft">Draft (hidden)</option>
+            </select>
+          </div>
+          <div class="form-group full-width" style="grid-column:1/-1;">
+            <label class="auth-checkbox-row" style="align-items:center;">
+              <input type="checkbox" id="acceptsCustom" />
+              <span style="font-family:var(--font-ui);font-size:0.875rem;color:var(--text-secondary);">This listing accepts custom orders (buyers can message you before purchasing)</span>
+            </label>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:var(--space-md);flex-wrap:wrap;">
+          <button class="btn-primary" onclick="submitNewProduct()">Publish Listing</button>
+          <button class="btn-ghost" onclick="saveAsDraft()">Save as Draft</button>
+          <button class="btn-ghost" onclick="switchPanel('products',document.querySelector('[data-panel=products]'))">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ ORDERS PANEL ══════════ -->
+    <div class="dash-panel" id="panel-orders">
+      <div class="dash-page-header">
+        <div>
+          <h1 class="dash-page-title">Orders</h1>
+          <p class="dash-page-sub">Manage and fulfil incoming orders</p>
+        </div>
+        <select class="sort-select" id="orderFilterStatus" style="border-radius:var(--radius-full);">
+          <option value="all">All Orders</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="shipped">Shipped</option>
+          <option value="delivered">Delivered</option>
+        </select>
+      </div>
+
+      <div class="table-card">
+        <div class="table-wrapper">
+          <table class="data-table" id="allOrdersTable">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Product</th>
+                <th>Buyer</th>
+                <th>Qty</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Update</th>
+              </tr>
+            </thead>
+            <tbody id="allOrdersBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ EARNINGS PANEL ══════════ -->
+    <div class="dash-panel" id="panel-earnings">
+      <div class="dash-page-header">
+        <div>
+          <h1 class="dash-page-title">Earnings</h1>
+          <p class="dash-page-sub">Track your revenue and payouts</p>
+        </div>
+      </div>
+
+      <div class="earnings-period-tabs">
+        <button class="earnings-tab active" data-period="month" onclick="switchEarningsPeriod(this)">This Month</button>
+        <button class="earnings-tab" data-period="quarter" onclick="switchEarningsPeriod(this)">Quarter</button>
+        <button class="earnings-tab" data-period="year" onclick="switchEarningsPeriod(this)">This Year</button>
+        <button class="earnings-tab" data-period="all" onclick="switchEarningsPeriod(this)">All Time</button>
+      </div>
+
+      <div class="earnings-summary-grid">
+        <div class="earnings-card">
+          <span class="label">Gross Sales</span>
+          <span class="amount" id="grossSales">₹0</span>
+          <span class="change change-up">↑ 18% vs last period</span>
+        </div>
+        <div class="earnings-card">
+          <span class="label">CraftNest Fee (5%)</span>
+          <span class="amount" id="platformFee" style="color:var(--text-muted);">₹0</span>
+          <span class="change" style="color:var(--text-muted);">Lowest in the market</span>
+        </div>
+        <div class="earnings-card" style="background:linear-gradient(135deg,rgba(92,107,58,0.06),transparent);">
+          <span class="label">Your Net Earnings</span>
+          <span class="amount" id="netEarnings" style="color:var(--moss);">₹0</span>
+          <span class="change change-up">↑ 18% vs last period</span>
+        </div>
+      </div>
+
+      <!-- Payout history -->
+      <div class="table-card">
+        <div class="table-card-header"><h4>Payout History</h4></div>
+        <div id="payoutHistory" style="padding:0 var(--space-xl);"></div>
+      </div>
+    </div>
+
+    <!-- ══════════ SHOP PROFILE PANEL ══════════ -->
+    <div class="dash-panel" id="panel-profile">
+      <div class="dash-page-header">
+        <div>
+          <h1 class="dash-page-title">Shop Profile</h1>
+          <p class="dash-page-sub">How buyers see your shop</p>
+        </div>
+        <a href="seller-profile.html?id=seller1" class="btn-ghost" target="_blank">Preview Shop →</a>
+      </div>
+
+      <div class="add-product-form">
+        <div class="profile-form-layout">
+          <div class="avatar-upload-zone">
+            <img class="avatar-preview" id="profileAvatarPreview" src="https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=200&q=80" alt="Avatar" />
+            <button class="btn-ghost" style="font-size:0.78rem;padding:0.4rem 1rem;width:100%;">Change Photo</button>
+            <p style="font-family:var(--font-ui);font-size:0.72rem;color:var(--text-muted);margin-top:var(--space-sm);text-align:center;">JPG or PNG, max 2MB</p>
+
+            <div style="margin-top:var(--space-xl);text-align:left;">
+              <p style="font-family:var(--font-ui);font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:var(--space-sm);">Banner Photo</p>
+              <div class="upload-zone" style="padding:var(--space-lg);border-radius:var(--radius-md);">
+                <input type="file" accept="image/*" />
+                <p style="font-family:var(--font-ui);font-size:0.78rem;margin:0;color:var(--text-muted);">Upload banner (1200×280px recommended)</p>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:var(--space-lg);">
+            <p class="form-section-title">Shop Details</p>
+            <div class="form-group">
+              <label class="form-label">Shop name</label>
+              <input class="form-input" type="text" value="Priya's Pottery" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Your location</label>
+              <input class="form-input" type="text" placeholder="City, Country" value="Jaipur, India" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Short bio (shown on cards)</label>
+              <input class="form-input" type="text" value="Wheel-thrown stoneware inspired by Rajasthani landscapes and ancient folk motifs." />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Full story</label>
+              <textarea class="form-textarea" rows="5" placeholder="Tell buyers your story…">I grew up watching my grandmother shape clay by hand…</textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Craft specialties (comma separated)</label>
+              <input class="form-input" type="text" value="Wheel-throwing, Stoneware, Celadon glazing, Folk motifs" />
+            </div>
+
+            <p class="form-section-title">Social Links</p>
+            <div class="form-group">
+              <label class="form-label">Instagram</label>
+              <input class="form-input" type="url" placeholder="https://instagram.com/yourhandle" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Website</label>
+              <input class="form-input" type="url" placeholder="https://yourwebsite.com" />
+            </div>
+
+            <div style="display:flex;gap:var(--space-md);">
+              <button class="btn-primary" onclick="showToastGlobal('Shop profile saved!','success')">Save Changes</button>
+              <button class="btn-ghost">Discard</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ SETTINGS PANEL ══════════ -->
+    <div class="dash-panel" id="panel-settings">
+      <div class="dash-page-header">
+        <div>
+          <h1 class="dash-page-title">Settings</h1>
+          <p class="dash-page-sub">Manage your account and notifications</p>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:var(--space-xl);max-width:640px;">
+
+        <div class="add-product-form">
+          <p class="form-section-title">Account</p>
+          <div style="display:flex;flex-direction:column;gap:var(--space-lg);">
+            <div class="form-group">
+              <label class="form-label">Email address</label>
+              <input class="form-input" type="email" value="priya@example.com" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">New password</label>
+              <input class="form-input" type="password" placeholder="Leave blank to keep current" />
+            </div>
+            <button class="btn-primary" style="width:fit-content;" onclick="showToastGlobal('Account updated!','success')">Update Account</button>
+          </div>
+        </div>
+
+        <div class="add-product-form">
+          <p class="form-section-title">Notifications</p>
+          <div style="display:flex;flex-direction:column;gap:var(--space-md);">
+            <label class="auth-checkbox-row" style="align-items:center;">
+              <input type="checkbox" checked />
+              <span style="font-family:var(--font-ui);font-size:0.875rem;color:var(--text-secondary);">Email me when I get a new order</span>
+            </label>
+            <label class="auth-checkbox-row" style="align-items:center;">
+              <input type="checkbox" checked />
+              <span style="font-family:var(--font-ui);font-size:0.875rem;color:var(--text-secondary);">Email me when I get a new message</span>
+            </label>
+            <label class="auth-checkbox-row" style="align-items:center;">
+              <input type="checkbox" checked />
+              <span style="font-family:var(--font-ui);font-size:0.875rem;color:var(--text-secondary);">Email me when I receive a review</span>
+            </label>
+            <label class="auth-checkbox-row" style="align-items:center;">
+              <input type="checkbox" />
+              <span style="font-family:var(--font-ui);font-size:0.875rem;color:var(--text-secondary);">Weekly earnings summary</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="add-product-form">
+          <p class="form-section-title">Payout Details</p>
+          <div style="display:flex;flex-direction:column;gap:var(--space-lg);">
+            <div class="form-group">
+              <label class="form-label">Bank account number</label>
+              <input class="form-input" type="text" placeholder="••••••••1234" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">IFSC code</label>
+              <input class="form-input" type="text" placeholder="SBIN0001234" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">UPI ID (optional)</label>
+              <input class="form-input" type="text" placeholder="priya@upi" />
+            </div>
+            <button class="btn-primary" style="width:fit-content;" onclick="showToastGlobal('Payout details saved!','success')">Save Payout Info</button>
+          </div>
+        </div>
+
+        <div class="add-product-form" style="border-color:rgba(201,64,64,0.2);">
+          <p class="form-section-title" style="color:#C94040;">Danger Zone</p>
+          <p style="font-family:var(--font-ui);font-size:0.875rem;color:var(--text-muted);margin-bottom:var(--space-lg);">Permanently deactivate your seller account and remove all listings. This cannot be undone.</p>
+          <button class="btn-ghost" style="border-color:#C94040;color:#C94040;" onclick="showToastGlobal('Please contact support to deactivate your account.','error')">Deactivate Account</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ ANALYTICS PANEL ══════════ -->
+    <div class="dash-panel" id="panel-analytics">
+      <div class="dash-page-header">
+        <div>
+          <h1 class="dash-page-title">Analytics</h1>
+          <p class="dash-page-sub">Deep dive into your shop performance</p>
+        </div>
+      </div>
+      <div class="alert alert-info" style="margin-bottom:var(--space-xl);">
+        <span class="alert-icon">📊</span>
+        <span class="alert-text">Advanced analytics — traffic sources, conversion rates, buyer geography — coming soon. Connect Google Analytics via Settings for deeper insights.</span>
+      </div>
+      <div class="stats-grid-4">
+        <div class="dash-stat-card clay"><span class="dash-stat-icon">👁️</span><span class="dash-stat-value">4,821</span><span class="dash-stat-label">Total Views</span></div>
+        <div class="dash-stat-card moss"><span class="dash-stat-icon">🛒</span><span class="dash-stat-value">3.2%</span><span class="dash-stat-label">Conversion Rate</span></div>
+        <div class="dash-stat-card ochre"><span class="dash-stat-icon">🔁</span><span class="dash-stat-value">31%</span><span class="dash-stat-label">Repeat Buyers</span></div>
+        <div class="dash-stat-card bark"><span class="dash-stat-icon">⭐</span><span class="dash-stat-value">128</span><span class="dash-stat-label">Total Reviews</span></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Mobile sidebar toggle -->
+<button class="dash-mobile-toggle" id="dashMobileToggle" onclick="toggleMobileSidebar()" aria-label="Open menu">☰</button>
+
+<script type="module">
+import { watchAuth, getCurrentUserProfile, getSellerOrders, deleteProduct, updateOrderStatus, showToast, logoutUser } from '../firebase-config.js';
+
+/* ══════════════════════════════════════════
+   DEMO DATA
+══════════════════════════════════════════ */
+const DEMO_STATS = { revenue: 124800, orders: 47, views: 4821, rating: 4.97 };
+
+const DEMO_PRODUCTS = [
+  { id:"p1",  title:"Moon Phase Ceramic Mug",      price:1850, img:"https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=300&q=80", views:1204, sales:128, rating:4.9, status:"active",   tag:"Bestseller" },
+  { id:"p9",  title:"Stoneware Espresso Set (×4)",  price:3200, img:"https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=300&q=80", views:887,  sales:211, rating:4.9, status:"active",   tag:null },
+  { id:"p17", title:"Raku-fired Sake Set",           price:4800, img:"https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=300&q=80", views:342,  sales:29,  rating:5.0, status:"active",   tag:"New" },
+  { id:"pb1", title:"Hand-carved Butter Dish",      price:2100, img:"https://images.unsplash.com/photo-1603006905003-be475563bc59?w=300&q=80", views:603,  sales:74,  rating:4.8, status:"active",   tag:null },
+  { id:"pb2", title:"Speckled Bud Vase",            price:1200, img:"https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&q=80", views:419,  sales:55,  rating:4.7, status:"draft",    tag:"Sale" },
+  { id:"pb3", title:"Folk Motif Dinner Plate",      price:2800, img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&q=80", views:177,  sales:18,  rating:5.0, status:"active",   tag:"Custom" },
+];
+
+const DEMO_ORDERS = [
+  { id:"CN-A4B9X", product:"Moon Phase Ceramic Mug",  buyer:"Neha R.",   qty:1, date:"30 Mar 2025", amount:1850, status:"pending" },
+  { id:"CN-C2D7Y", product:"Stoneware Espresso Set",   buyer:"James T.",  qty:1, date:"29 Mar 2025", amount:3200, status:"confirmed" },
+  { id:"CN-E5F1Z", product:"Raku-fired Sake Set",      buyer:"Aisha M.",  qty:1, date:"27 Mar 2025", amount:4800, status:"shipped" },
+  { id:"CN-G8H3W", product:"Hand-carved Butter Dish",  buyer:"Ravi K.",   qty:2, date:"25 Mar 2025", amount:4200, status:"delivered" },
+  { id:"CN-I6J0V", product:"Moon Phase Ceramic Mug",   buyer:"Sophie L.", qty:3, date:"22 Mar 2025", amount:5550, status:"delivered" },
+  { id:"CN-K3L7U", product:"Folk Motif Dinner Plate",  buyer:"Carlos M.", qty:1, date:"19 Mar 2025", amount:2800, status:"shipped" },
+];
+
+const REVENUE_DATA = [
+  { month:"Oct", value:72400 },
+  { month:"Nov", value:89200 },
+  { month:"Dec", value:134600 },
+  { month:"Jan", value:98100 },
+  { month:"Feb", value:105800 },
+  { month:"Mar", value:124800 },
+];
+
+const PAYOUTS = [
+  { date:"15 Mar 2025", period:"1–15 Mar",  gross:68400, fee:3420, net:64980, status:"paid" },
+  { date:"28 Feb 2025", period:"16–28 Feb", gross:52100, fee:2605, net:49495, status:"paid" },
+  { date:"15 Feb 2025", period:"1–15 Feb",  gross:53700, fee:2685, net:51015, status:"paid" },
+  { date:"31 Jan 2025", period:"All Jan",   gross:98100, fee:4905, net:93195, status:"paid" },
+];
+
+/* ══════════════════════════════════════════
+   PANEL SWITCHING
+══════════════════════════════════════════ */
+window.switchPanel = function(name, btn) {
+  document.querySelectorAll(".dash-panel").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".dash-nav-link").forEach(l => l.classList.remove("active"));
+  const panel = document.getElementById("panel-" + name);
+  if (panel) panel.classList.add("active");
+  if (btn) btn.classList.add("active");
+  document.getElementById("dashSidebar").classList.remove("open");
+  document.getElementById("sidebarOverlay").classList.remove("show");
+};
+
+/* ══════════════════════════════════════════
+   MOBILE SIDEBAR
+══════════════════════════════════════════ */
+window.toggleMobileSidebar = function() {
+  const sidebar = document.getElementById("dashSidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+  sidebar.classList.toggle("open");
+  overlay.classList.toggle("show");
+};
+
+document.getElementById("sidebarOverlay").addEventListener("click", () => {
+  document.getElementById("dashSidebar").classList.remove("open");
+  document.getElementById("sidebarOverlay").classList.remove("show");
+});
+
+/* ══════════════════════════════════════════
+   INIT OVERVIEW
+══════════════════════════════════════════ */
+function initOverview() {
+  // Date
+  document.getElementById("todayDate").textContent =
+    new Date().toLocaleDateString("en-IN", { weekday:"long", day:"numeric", month:"long", year:"numeric" });
+
+  // Animate stat counters
+  animateVal("statRevenue", DEMO_STATS.revenue, true);
+  animateVal("statOrders",  DEMO_STATS.orders,  false);
+  animateVal("statViews",   DEMO_STATS.views,   false);
+
+  // Bar chart
+  const maxVal = Math.max(...REVENUE_DATA.map(d => d.value));
+  const chartEl = document.getElementById("revenueChart");
+  const labelsEl = document.getElementById("revenueLabels");
+  chartEl.innerHTML = "";
+  labelsEl.innerHTML = "";
+
+  REVENUE_DATA.forEach((d, i) => {
+    const pct = (d.value / maxVal) * 100;
+    const col = document.createElement("div");
+    col.className = "bar-col";
+    col.innerHTML = `
+      <div class="bar-value">₹${(d.value/1000).toFixed(0)}k</div>
+      <div class="bar" style="height:${pct}%;background:${i === REVENUE_DATA.length-1 ? 'var(--clay)' : 'var(--clay-light)'};opacity:${i === REVENUE_DATA.length-1 ? '1' : '0.6'}" title="${d.month}: ₹${d.value.toLocaleString('en-IN')}"></div>`;
+    chartEl.appendChild(col);
+
+    const lbl = document.createElement("div");
+    lbl.className = "bar-label";
+    lbl.style.flex = "1";
+    lbl.style.textAlign = "center";
+    lbl.textContent = d.month;
+    labelsEl.appendChild(lbl);
+  });
+
+  // Recent orders
+  renderOrdersTable("recentOrdersBody", DEMO_ORDERS.slice(0, 5), false);
+
+  // Top products table
+  const tbody = document.getElementById("topProductsBody");
+  tbody.innerHTML = "";
+  DEMO_PRODUCTS.filter(p => p.status === "active").forEach(p => {
+    tbody.innerHTML += `
+      <tr>
+        <td>
+          <div style="display:flex;align-items:center;gap:var(--space-md);">
+            <img src="${p.img}" style="width:40px;height:40px;border-radius:var(--radius-sm);object-fit:cover;border:1px solid var(--border);" />
+            <span style="font-family:var(--font-display);font-size:0.875rem;">${p.title}</span>
+          </div>
+        </td>
+        <td>${p.views.toLocaleString()}</td>
+        <td>${p.sales}</td>
+        <td>₹${(p.price * p.sales).toLocaleString("en-IN")}</td>
+        <td>★ ${p.rating}</td>
+        <td><span class="status-pill status-active">Active</span></td>
+      </tr>`;
+  });
+}
+
+/* ══════════════════════════════════════════
+   ORDERS TABLE
+══════════════════════════════════════════ */
+function renderOrdersTable(tbodyId, orders, showQty = true) {
+  const tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  orders.forEach(o => {
+    const statusClass = { pending:"status-pending", confirmed:"status-active", shipped:"status-shipped", delivered:"status-delivered" }[o.status] || "status-pending";
+    tbody.innerHTML += `
+      <tr>
+        <td><strong style="font-family:var(--font-ui);font-size:0.82rem;">${o.id}</strong></td>
+        <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${o.product}</td>
+        <td>${o.buyer}</td>
+        ${showQty ? `<td>${o.qty}</td>` : ""}
+        <td style="white-space:nowrap;">${o.date}</td>
+        <td style="font-weight:600;">₹${o.amount.toLocaleString("en-IN")}</td>
+        <td><span class="status-pill ${statusClass}">${o.status}</span></td>
+        <td>
+          <select class="sort-select" style="font-size:0.72rem;padding:4px 24px 4px 8px;border-radius:6px;"
+            onchange="updateStatus('${o.id}', this.value)">
+            <option value="pending"   ${o.status==="pending"  ?"selected":""}>Pending</option>
+            <option value="confirmed" ${o.status==="confirmed"?"selected":""}>Confirmed</option>
+            <option value="shipped"   ${o.status==="shipped"  ?"selected":""}>Shipped</option>
+            <option value="delivered" ${o.status==="delivered"?"selected":""}>Delivered</option>
+          </select>
+        </td>
+      </tr>`;
+  });
+}
+
+window.updateStatus = function(orderId, newStatus) {
+  const order = DEMO_ORDERS.find(o => o.id === orderId);
+  if (order) {
+    order.status = newStatus;
+    renderOrdersTable("recentOrdersBody", DEMO_ORDERS.slice(0, 5), false);
+    renderOrdersTable("allOrdersBody", DEMO_ORDERS, true);
+    showToastGlobal("Order " + orderId + " marked as " + newStatus, "success");
+  }
+};
+
+/* ══════════════════════════════════════════
+   PRODUCTS PANEL
+══════════════════════════════════════════ */
+function renderProductsPanel() {
+  const grid = document.getElementById("dashProductsGrid");
+  grid.innerHTML = "";
+  DEMO_PRODUCTS.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "dash-product-card";
+    card.innerHTML = `
+      <img class="dash-product-img" src="${p.img}" alt="${p.title}" />
+      <div class="dash-product-info">
+        <div class="dash-product-name">${p.title}</div>
+        <div class="dash-product-meta">
+          <span>★ ${p.rating} · ${p.sales} sold</span>
+          <span class="status-pill ${p.status === "active" ? "status-active" : "status-pending"}" style="font-size:0.65rem;">${p.status}</span>
+        </div>
+        <div class="dash-product-price">₹${p.price.toLocaleString("en-IN")}</div>
+        <div class="dash-product-actions">
+          <a href="product.html?id=${p.id}" class="dash-product-btn" target="_blank">View</a>
+          <button class="dash-product-btn" onclick="editProduct('${p.id}')">Edit</button>
+          <button class="dash-product-btn danger" onclick="confirmDeleteProduct('${p.id}')">Delete</button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+window.editProduct = function(id) {
+  switchPanel("addproduct", document.querySelector("[data-panel=addproduct]"));
+  const p = DEMO_PRODUCTS.find(x => x.id === id);
+  if (p) {
+    document.getElementById("newTitle").value = p.title;
+    document.getElementById("newPrice").value = p.price;
+    showToastGlobal("Editing: " + p.title, "info");
+  }
+};
+
+window.confirmDeleteProduct = function(id) {
+  if (confirm("Are you sure you want to delete this listing? This cannot be undone.")) {
+    const idx = DEMO_PRODUCTS.findIndex(p => p.id === id);
+    if (idx > -1) DEMO_PRODUCTS.splice(idx, 1);
+    renderProductsPanel();
+    showToastGlobal("Listing deleted.", "info");
+  }
+};
+
+/* ══════════════════════════════════════════
+   ADD PRODUCT
+══════════════════════════════════════════ */
+window.submitNewProduct = function() {
+  const title    = document.getElementById("newTitle").value.trim();
+  const category = document.getElementById("newCategory").value;
+  const price    = document.getElementById("newPrice").value;
+  const desc     = document.getElementById("newDescription").value.trim();
+
+  if (!title || !category || !price || !desc) {
+    showToastGlobal("Please fill in all required fields.", "error");
+    return;
+  }
+
+  // Add to demo products
+  const newProd = {
+    id: "new_" + Date.now(),
+    title, price: parseInt(price),
+    img: "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=300&q=80",
+    views: 0, sales: 0, rating: 0, status: "active", tag: document.getElementById("newTag").value || null
+  };
+  DEMO_PRODUCTS.unshift(newProd);
+  showToastGlobal("Product listed successfully! 🎉", "success");
+  document.getElementById("addProductForm").reset();
+  setTimeout(() => switchPanel("products", document.querySelector("[data-panel=products]")), 800);
+};
+
+window.saveAsDraft = function() {
+  showToastGlobal("Saved as draft.", "info");
+};
+
+/* ── Photo upload preview ── */
+document.getElementById("photoInput").addEventListener("change", function() {
+  const grid = document.getElementById("photoPreviewGrid");
+  grid.innerHTML = "";
+  Array.from(this.files).slice(0, 10).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      grid.innerHTML += `
+        <div class="upload-preview-item">
+          <img src="${e.target.result}" alt="Preview" />
+          <button class="upload-preview-remove" onclick="this.parentElement.remove()">✕</button>
+        </div>`;
+    };
+    reader.readAsDataURL(file);
+  });
+});
+
+/* ── Upload zone drag states ── */
+const zone = document.getElementById("photoUploadZone");
+if (zone) {
+  zone.addEventListener("dragover",  e => { e.preventDefault(); zone.classList.add("drag-over"); });
+  zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
+  zone.addEventListener("drop",      e => { e.preventDefault(); zone.classList.remove("drag-over"); });
+}
+
+/* ══════════════════════════════════════════
+   EARNINGS
+══════════════════════════════════════════ */
+const earningsData = {
+  month:   { gross:124800, fee:6240,  net:118560 },
+  quarter: { gross:328700, fee:16435, net:312265 },
+  year:    { gross:847200, fee:42360, net:804840 },
+  all:     { gross:1240000, fee:62000, net:1178000 },
+};
+
+window.switchEarningsPeriod = function(btn) {
+  document.querySelectorAll(".earnings-tab").forEach(t => t.classList.remove("active"));
+  btn.classList.add("active");
+  const data = earningsData[btn.dataset.period];
+  animateVal("grossSales",  data.gross, true);
+  animateVal("platformFee", data.fee,   true);
+  animateVal("netEarnings", data.net,   true);
+};
+
+function renderPayouts() {
+  const el = document.getElementById("payoutHistory");
+  el.innerHTML = "";
+  PAYOUTS.forEach(p => {
+    el.innerHTML += `
+      <div class="payout-row">
+        <div>
+          <strong style="font-family:var(--font-ui);font-size:0.85rem;display:block;">${p.date}</strong>
+          <span style="font-family:var(--font-ui);font-size:0.72rem;color:var(--text-muted);">${p.period}</span>
+        </div>
+        <span style="font-family:var(--font-ui);font-size:0.78rem;color:var(--text-muted);">Fee: ₹${p.fee.toLocaleString("en-IN")}</span>
+        <span class="status-pill status-delivered" style="font-size:0.65rem;">Paid</span>
+        <span class="payout-amount">₹${p.net.toLocaleString("en-IN")}</span>
+      </div>`;
+  });
+}
+
+function initEarnings() {
+  animateVal("grossSales",  earningsData.month.gross, true);
+  animateVal("platformFee", earningsData.month.fee,   true);
+  animateVal("netEarnings", earningsData.month.net,   true);
+  renderPayouts();
+}
+
+/* ══════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════ */
+function animateVal(id, target, isCurrency) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const dur  = 1600;
+  const step = target / (dur / 16);
+  let cur    = 0;
+  const tick = () => {
+    cur = Math.min(cur + step, target);
+    el.textContent = isCurrency
+      ? "₹" + Math.floor(cur).toLocaleString("en-IN")
+      : Math.floor(cur).toLocaleString("en-IN");
+    if (cur < target) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+window.showToastGlobal = function(msg, type) { showToast(msg, type); };
+
+/* ══════════════════════════════════════════
+   AUTH
+══════════════════════════════════════════ */
+window.handleLogout = async function() {
+  try {
+    await logoutUser();
+    window.location.href = "../index.html";
+  } catch {
+    window.location.href = "../index.html";
+  }
+};
+
+watchAuth(async user => {
+  if (user) {
+    const profile = await getCurrentUserProfile();
+    if (profile) {
+      const firstName = profile.displayName?.split(" ")[0] || "Maker";
+      document.getElementById("sellerFirstName").textContent = firstName;
+      document.getElementById("dashSellerName").textContent  = profile.displayName || "My Shop";
+      if (profile.photoURL) document.getElementById("dashAvatar").src = profile.photoURL;
+    }
+  }
+});
+
+/* Order filter */
+document.getElementById("orderFilterStatus").addEventListener("change", function() {
+  const val     = this.value;
+  const filtered = val === "all" ? DEMO_ORDERS : DEMO_ORDERS.filter(o => o.status === val);
+  renderOrdersTable("allOrdersBody", filtered, true);
+});
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+initOverview();
+renderProductsPanel();
+renderOrdersTable("allOrdersBody", DEMO_ORDERS, true);
+initEarnings();
+</script>
+
+</body>
+</html>
