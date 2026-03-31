@@ -879,13 +879,49 @@
         </div>
 
         <p class="form-section-title">Photos</p>
-        <div class="upload-zone" id="photoUploadZone" style="margin-bottom:var(--space-xl);">
-          <input type="file" id="photoInput" accept="image/*" multiple />
-          <span class="upload-icon">📸</span>
-          <p>Drag photos here or click to browse</p>
-          <span>JPG, PNG, WebP · Max 5MB each · Up to 10 images</span>
+        <div style="display:flex;flex-direction:column;gap:var(--space-md);margin-bottom:var(--space-xl);">
+
+          <!-- Primary image URL -->
+          <div class="form-group">
+            <label class="form-label">Main product image URL *</label>
+            <div style="display:flex;gap:var(--space-sm);">
+              <input class="form-input" type="url" id="newImageUrl"
+                placeholder="https://images.unsplash.com/photo-... or any image URL"
+                oninput="previewMainImage(this.value)" />
+              <button type="button" class="btn-ghost"
+                style="white-space:nowrap;padding:0.6rem 1rem;font-size:0.8rem;"
+                onclick="document.getElementById('newImageUrl').value='';document.getElementById('mainImgPreview').style.display='none'">
+                Clear
+              </button>
+            </div>
+            <span class="form-hint">Paste any public image URL. Free images: <a href="https://unsplash.com" target="_blank" style="color:var(--clay);">unsplash.com</a> → right-click image → Copy image address</span>
+          </div>
+
+          <!-- Preview -->
+          <div id="mainImgPreview" style="display:none;">
+            <img id="mainImgPreviewImg"
+              style="width:160px;height:160px;object-fit:cover;border-radius:var(--radius-lg);border:1px solid var(--border);"
+              alt="Preview" />
+          </div>
+
+          <!-- Extra image URLs -->
+          <div class="form-group">
+            <label class="form-label">Additional images (optional, one URL per line)</label>
+            <textarea class="form-textarea" id="extraImageUrls" rows="3"
+              placeholder="https://...&#10;https://...&#10;https://..."></textarea>
+          </div>
+
+          <!-- Helper note -->
+          <div style="background:var(--sand);border-radius:var(--radius-md);padding:var(--space-md) var(--space-lg);display:flex;gap:var(--space-md);align-items:flex-start;">
+            <span style="font-size:1.1rem;flex-shrink:0;">💡</span>
+            <p style="font-family:var(--font-ui);font-size:0.8rem;color:var(--text-secondary);line-height:1.6;margin:0;">
+              <strong>Where to get free product images:</strong><br/>
+              • <a href="https://unsplash.com" target="_blank" style="color:var(--clay);">Unsplash.com</a> — free high-quality photos<br/>
+              • Your own Google Drive / Dropbox (get shareable link)<br/>
+              • Upload to <a href="https://imgbb.com" target="_blank" style="color:var(--clay);">imgbb.com</a> for free image hosting (no account needed)
+            </p>
+          </div>
         </div>
-        <div class="upload-preview-grid" id="photoPreviewGrid"></div>
 
         <p class="form-section-title" style="margin-top:var(--space-xl);">Variants (optional)</p>
         <div style="margin-bottom:var(--space-xl);">
@@ -1410,22 +1446,45 @@ window.submitNewProduct = function() {
   const category = document.getElementById("newCategory").value;
   const price    = document.getElementById("newPrice").value;
   const desc     = document.getElementById("newDescription").value.trim();
+  const imgUrl   = document.getElementById("newImageUrl").value.trim();
 
   if (!title || !category || !price || !desc) {
     showToastGlobal("Please fill in all required fields.", "error");
     return;
   }
 
-  // Add to demo products
+  if (!imgUrl) {
+    showToastGlobal("Please add at least one image URL.", "error");
+    return;
+  }
+
+  // Collect extra image URLs
+  const extraUrls = (document.getElementById("extraImageUrls").value || "")
+    .split("\n")
+    .map(u => u.trim())
+    .filter(u => u.startsWith("http"));
+
+  const images = [imgUrl, ...extraUrls].slice(0, 10);
+
   const newProd = {
-    id: "new_" + Date.now(),
-    title, price: parseInt(price),
-    img: "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=300&q=80",
-    views: 0, sales: 0, rating: 0, status: "active", tag: document.getElementById("newTag").value || null
+    id:       "new_" + Date.now(),
+    title,
+    price:    parseInt(price),
+    img:      imgUrl,
+    images,
+    views:    0,
+    sales:    0,
+    rating:   0,
+    status:   document.getElementById("newStatus").value || "active",
+    tag:      document.getElementById("newTag").value    || null,
+    category,
+    description: desc,
   };
+
   DEMO_PRODUCTS.unshift(newProd);
   showToastGlobal("Product listed successfully! 🎉", "success");
   document.getElementById("addProductForm").reset();
+  document.getElementById("mainImgPreview").style.display = "none";
   setTimeout(() => switchPanel("products", document.querySelector("[data-panel=products]")), 800);
 };
 
@@ -1433,30 +1492,17 @@ window.saveAsDraft = function() {
   showToastGlobal("Saved as draft.", "info");
 };
 
-/* ── Photo upload preview ── */
-document.getElementById("photoInput").addEventListener("change", function() {
-  const grid = document.getElementById("photoPreviewGrid");
-  grid.innerHTML = "";
-  Array.from(this.files).slice(0, 10).forEach(file => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      grid.innerHTML += `
-        <div class="upload-preview-item">
-          <img src="${e.target.result}" alt="Preview" />
-          <button class="upload-preview-remove" onclick="this.parentElement.remove()">✕</button>
-        </div>`;
-    };
-    reader.readAsDataURL(file);
-  });
-});
+/* ── Image URL preview ── */
+window.previewMainImage = function(url) {
+  const wrap = document.getElementById("mainImgPreview");
+  const img  = document.getElementById("mainImgPreviewImg");
+  if (!url || !url.startsWith("http")) { wrap.style.display = "none"; return; }
+  img.src = url;
+  img.onerror = () => { wrap.style.display = "none"; };
+  img.onload  = () => { wrap.style.display = "block"; };
+};
 
-/* ── Upload zone drag states ── */
-const zone = document.getElementById("photoUploadZone");
-if (zone) {
-  zone.addEventListener("dragover",  e => { e.preventDefault(); zone.classList.add("drag-over"); });
-  zone.addEventListener("dragleave", () => zone.classList.remove("drag-over"));
-  zone.addEventListener("drop",      e => { e.preventDefault(); zone.classList.remove("drag-over"); });
-}
+/* ── Upload zone drag states (removed - using URL input instead) ── */
 
 /* ══════════════════════════════════════════
    EARNINGS
