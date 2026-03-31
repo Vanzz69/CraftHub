@@ -9,6 +9,45 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles/main.css" />
   <link rel="stylesheet" href="styles/components.css" />
+  <style>
+    /* ── Index-page mobile overrides ── */
+    @media (max-width: 480px) {
+      /* Sellers section watermark too large on mobile */
+      .sellers-section::before { font-size: 3.5rem; }
+
+      /* Featured section header stacks vertically */
+      .featured-section .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+      }
+
+      /* Products grid 2-col on small screens */
+      #featuredGrid { grid-template-columns: repeat(2, 1fr); gap: var(--space-sm); }
+
+      /* CTA banner buttons full width */
+      .cta-banner .btn-primary,
+      .cta-banner .btn-outline { max-width: 100%; }
+
+      /* Footer social row centered */
+      .footer-social { justify-content: flex-start; }
+
+      /* Hero stat grid for tiny screens */
+      .hero-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-md);
+        width: 100%;
+      }
+      .hero-stats .stat:last-child {
+        grid-column: 1 / -1;
+        text-align: center;
+      }
+    }
+
+    /* Ensure hero never hides behind fixed navbar on any screen */
+    .hero { padding-top: 0; }
+  </style>
 </head>
 <body>
 
@@ -70,7 +109,7 @@
     <div class="blob blob-2"></div>
     <div class="blob blob-3"></div>
 
-    <!-- Floating product cards (decorative) -->
+    <!-- Floating product cards (decorative, hidden on mobile via CSS) -->
     <div class="hero-float-card float-card-1" data-depth="0.3">
       <img src="https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=200&q=80" alt="Pottery" />
       <span>Hand-thrown Ceramics</span>
