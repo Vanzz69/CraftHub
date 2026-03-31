@@ -659,7 +659,7 @@ p {
   position: relative;
   z-index: 2;
   max-width: 700px;
-  padding: var(--space-4xl) var(--space-xl) var(--space-3xl);
+  padding: calc(var(--nav-h) + var(--space-3xl)) var(--space-xl) var(--space-3xl);
   margin-left: max(var(--space-xl), calc((100vw - var(--max-width)) / 2 + var(--space-xl)));
 }
 
@@ -1854,4 +1854,271 @@ p {
   .navbar, .cursor, .cursor-follower, .noise-overlay,
   .hero-float-card, .blob { display: none; }
   body { cursor: auto; }
+}
+
+/* ═══════════════════════════════════════════════
+   35. MOBILE RESPONSIVE — GLOBAL OVERRIDES
+   Covers all breakpoints for every section
+   on the index/landing page and shared elements
+═══════════════════════════════════════════════ */
+
+/* ── Tablet (≤ 1024px) ── */
+@media (max-width: 1024px) {
+  :root { --nav-h: 64px; }
+
+  .hero-float-card { display: none; }
+
+  .hero-content {
+    padding: calc(var(--nav-h) + var(--space-2xl)) var(--space-xl) var(--space-2xl);
+    margin-left: 0;
+    max-width: 100%;
+  }
+
+  .hero-title .line-2 { padding-left: 1rem; }
+  .hero-title .line-3 { padding-left: 2.5rem; }
+
+  .hero-stats {
+    gap: var(--space-lg);
+  }
+
+  .stat-num { font-size: 1.4rem; }
+}
+
+/* ── Mobile (≤ 768px) ── */
+@media (max-width: 768px) {
+  :root {
+    --nav-h:     60px;
+    --space-4xl: 4rem;
+    --space-3xl: 3rem;
+  }
+
+  /* Navbar */
+  .nav-inner { padding: 0 var(--space-lg); }
+
+  /* Hero */
+  .hero {
+    min-height: 100svh;
+    align-items: flex-start;
+  }
+
+  .hero-content {
+    padding: calc(var(--nav-h) + var(--space-2xl)) var(--space-lg) var(--space-2xl);
+    text-align: left;
+  }
+
+  .hero-title .line-2 { padding-left: 0; }
+  .hero-title .line-3 { padding-left: 1rem; }
+
+  .hero-sub { font-size: 0.95rem; }
+
+  .hero-cta-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btn-hero { width: 100%; justify-content: center; }
+
+  .hero-stats {
+    gap: var(--space-md);
+    flex-wrap: wrap;
+  }
+
+  .stat-num  { font-size: 1.2rem; }
+  .stat-label { font-size: 0.7rem; }
+
+  .hero-scroll-hint { display: none; }
+
+  /* Marquee */
+  .marquee-track { font-size: 0.72rem; gap: var(--space-lg); }
+
+  /* Section headers */
+  .section-header { margin-bottom: var(--space-2xl); }
+  .section-title  { font-size: clamp(1.5rem, 5vw, 2.2rem); }
+
+  /* Categories */
+  .categories-section { padding: var(--space-3xl) 0; }
+
+  .categories-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-sm);
+  }
+
+  .cat-large {
+    grid-column: 1 / -1;
+    aspect-ratio: 16 / 7;
+  }
+
+  .cat-all {
+    grid-column: 1 / -1;
+    aspect-ratio: auto;
+    min-height: 100px;
+  }
+
+  /* Products grid */
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+  }
+
+  /* Sellers grid */
+  .sellers-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+  }
+
+  /* How it works */
+  .how-section { padding: var(--space-3xl) 0; }
+
+  .how-steps {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-md);
+  }
+
+  .how-step {
+    max-width: 100%;
+    text-align: left;
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-lg);
+    align-items: flex-start;
+    padding: var(--space-lg);
+  }
+
+  .step-icon { font-size: 1.5rem; margin: 0; flex-shrink: 0; }
+  .step-num  { margin: 0 0 4px 0; }
+  .how-step-arrow { display: none; }
+
+  /* Testimonials */
+  .testimonials-track { gap: var(--space-md); }
+  .testimonial-card { flex: 0 0 88vw; padding: var(--space-xl); }
+
+  /* Values */
+  .values-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+  }
+
+  .value-item { padding: var(--space-lg) var(--space-md); }
+
+  /* CTA banner */
+  .cta-banner { padding: var(--space-3xl) 0; }
+  .cta-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  .btn-large { width: 100%; max-width: 280px; justify-content: center; }
+
+  /* Footer */
+  .footer { padding: var(--space-3xl) 0 var(--space-2xl); }
+
+  .footer-top {
+    grid-template-columns: 1fr;
+    gap: var(--space-2xl);
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-legal { flex-wrap: wrap; justify-content: center; gap: var(--space-md); }
+}
+
+/* ── Small mobile (≤ 480px) ── */
+@media (max-width: 480px) {
+  :root { --nav-h: 56px; }
+
+  .container { padding: 0 var(--space-md); }
+
+  /* Hero title even tighter */
+  .hero-content {
+    padding: calc(var(--nav-h) + var(--space-xl)) var(--space-md) var(--space-xl);
+  }
+
+  .hero-title .line-3 { padding-left: 0.5rem; }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+  }
+
+  .stat-divider { display: none; }
+
+  /* Single column grids */
+  .products-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-sm);
+  }
+
+  .product-card .product-info { padding: var(--space-sm); }
+  .product-title { font-size: 0.82rem; }
+
+  .sellers-grid { grid-template-columns: 1fr; }
+
+  .values-grid  { grid-template-columns: 1fr; }
+
+  .categories-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-sm);
+  }
+
+  .cat-large { aspect-ratio: 16 / 8; }
+
+  /* CTA */
+  .cta-banner h2 { font-size: 1.5rem; }
+
+  /* Testimonials full width */
+  .testimonial-card { flex: 0 0 92vw; }
+
+  /* Marquee smaller */
+  .marquee-strip { padding: 0.6rem 0; }
+  .marquee-track { font-size: 0.68rem; }
+
+  /* How it works */
+  .how-tabs {
+    width: 100%;
+  }
+  .how-tab { font-size: 0.78rem; padding: 0.5rem 0.75rem; }
+}
+
+/* ── Very small (≤ 360px) ── */
+@media (max-width: 360px) {
+  .hero-content { padding-left: var(--space-md); padding-right: var(--space-md); }
+  .products-grid { grid-template-columns: 1fr; }
+  .categories-grid { grid-template-columns: 1fr; }
+  .cat-large { aspect-ratio: 4/3; }
+}
+
+/* ── Touch device: disable custom cursor ── */
+@media (hover: none), (pointer: coarse) {
+  .cursor, .cursor-follower { display: none !important; }
+  body { cursor: auto !important; }
+}
+
+/* ── Safe area insets for notched phones (iPhone X+) ── */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-nav {
+    padding-bottom: max(var(--space-sm), env(safe-area-inset-bottom));
+  }
+
+  .navbar {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* ── Landscape mobile ── */
+@media (max-width: 812px) and (orientation: landscape) {
+  .hero {
+    min-height: auto;
+    padding-bottom: var(--space-2xl);
+  }
+
+  .hero-content {
+    padding-top: calc(var(--nav-h) + var(--space-lg));
+  }
+
+  .hero-float-card { display: none; }
 }
