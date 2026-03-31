@@ -67,12 +67,12 @@ import {
    Get it from: Firebase Console → Project Settings → General → Your apps
 ───────────────────────────────────────────── */
 const firebaseConfig = {
-  apiKey:            "YOUR_API_KEY",
-  authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId:         "YOUR_PROJECT_ID",
-  storageBucket:     "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId:             "YOUR_APP_ID"
+  apiKey: "AIzaSyDvhwEjR7Uk9_ER1l2XfJ5f60Q8T_8XwQk",
+  authDomain: "craftnest-2bf0c.firebaseapp.com",
+  projectId: "craftnest-2bf0c",
+  storageBucket: "craftnest-2bf0c.firebasestorage.app",
+  messagingSenderId: "718058652681",
+  appId: "1:718058652681:web:387f29c0f628900c8a24d8"
 };
 
 /* ─────────────────────────────────────────────
