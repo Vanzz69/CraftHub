@@ -11,6 +11,14 @@
   <link rel="stylesheet" href="styles/components.css" />
   <style>
     /* ── Index-page mobile overrides ── */
+
+    /* Always show navbar bg on index so hero text isn't hidden behind transparent bar */
+    #navbar {
+      background: rgba(251, 246, 239, 0.97);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 var(--border);
+    }
     @media (max-width: 480px) {
       /* Sellers section watermark too large on mobile */
       .sellers-section::before { font-size: 3.5rem; }
@@ -46,7 +54,7 @@
     }
 
     /* Ensure hero never hides behind fixed navbar on any screen */
-    .hero { padding-top: 0; }
+    .hero { padding-top: 0 !important; }
   </style>
 </head>
 <body>
@@ -648,25 +656,28 @@
   </footer>
 
   <script>
-    // ─── Cursor ───
-    const cursor = document.getElementById('cursor');
-    const follower = document.getElementById('cursorFollower');
-    let mx = 0, my = 0, fx = 0, fy = 0;
-    document.addEventListener('mousemove', e => {
-      mx = e.clientX; my = e.clientY;
-      cursor.style.transform = `translate(${mx}px, ${my}px)`;
-    });
-    function animateFollower() {
-      fx += (mx - fx) * 0.1;
-      fy += (my - fy) * 0.1;
-      follower.style.transform = `translate(${fx}px, ${fy}px)`;
-      requestAnimationFrame(animateFollower);
-    }
-    animateFollower();
-    document.querySelectorAll('a, button').forEach(el => {
-      el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); follower.classList.add('hover'); });
-      el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); follower.classList.remove('hover'); });
-    });
+    // ─── Cursor (inline, no module needed) ───
+    (function() {
+      if (!window.matchMedia('(hover: hover)').matches) return;
+      const cursor   = document.getElementById('cursor');
+      const follower = document.getElementById('cursorFollower');
+      if (!cursor || !follower) return;
+      let mx = 0, my = 0, fx = 0, fy = 0;
+      document.addEventListener('mousemove', e => {
+        mx = e.clientX; my = e.clientY;
+        cursor.style.transform = `translate(${mx}px, ${my}px)`;
+      });
+      (function loop() {
+        fx += (mx - fx) * 0.1;
+        fy += (my - fy) * 0.1;
+        follower.style.transform = `translate(${fx}px, ${fy}px)`;
+        requestAnimationFrame(loop);
+      })();
+      document.querySelectorAll('a, button').forEach(el => {
+        el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); follower.classList.add('hover'); });
+        el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); follower.classList.remove('hover'); });
+      });
+    })();
 
     // ─── Navbar scroll ───
     const navbar = document.getElementById('navbar');
@@ -745,16 +756,39 @@
       });
     });
 
+    // ─── Shared cart helper (uses cn_cart_v2 — same key as cart.html) ───
+    function addToCartShared(productId, title) {
+      let data = JSON.parse(localStorage.getItem('cn_cart_v2') || '{"items":[]}');
+      if (!data.items) data.items = [];
+      const idx = data.items.findIndex(i => i.productId === String(productId));
+      if (idx > -1) data.items[idx].quantity++;
+      else data.items.push({ productId: String(productId), quantity: 1, variant: null, addedAt: Date.now() });
+      localStorage.setItem('cn_cart_v2', JSON.stringify(data));
+      const count = data.items.reduce((s, i) => s + i.quantity, 0);
+      const badge = document.getElementById('cartBadge');
+      badge.textContent = count;
+      badge.classList.add('pop');
+      setTimeout(() => badge.classList.remove('pop'), 300);
+      // Simple toast
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.innerHTML = `✅ "${title || 'Item'}" added to cart`;
+      let tc = document.getElementById('toastContainer');
+      if (!tc) { tc = document.createElement('div'); tc.id='toastContainer'; tc.className='toast-container'; document.body.appendChild(tc); }
+      tc.appendChild(t);
+      setTimeout(() => t.remove(), 3500);
+    }
+
     // ─── Featured Products (demo data) ───
     const products = [
-      { id: 1, title: "Moon Phase Ceramic Mug", seller: "Priya's Pottery", price: 1850, currency: "₹", img: "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=400&q=80", rating: 4.9, reviews: 128, tag: "Bestseller" },
-      { id: 2, title: "Hand-forged Silver Ring", seller: "Marco Forges", price: 4200, currency: "₹", img: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&q=80", rating: 5.0, reviews: 57, tag: "Custom" },
-      { id: 3, title: "Kente-pattern Wall Tapestry", seller: "Amara Weaves", price: 6800, currency: "₹", img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80", rating: 4.8, reviews: 204, tag: "New" },
-      { id: 4, title: "Pressed Lavender Beeswax Candle", seller: "Suki's Botanicals", price: 950, currency: "₹", img: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&q=80", rating: 4.9, reviews: 340 },
-      { id: 5, title: "Driftwood Serving Board", seller: "Oak & Stone", price: 2200, currency: "₹", img: "https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=400&q=80", rating: 4.7, reviews: 89, tag: "Eco" },
-      { id: 6, title: "Macramé Plant Hanger Set", seller: "Knotted & Kind", price: 1400, currency: "₹", img: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=80", rating: 4.8, reviews: 176 },
-      { id: 7, title: "Hand-dyed Indigo Cushion Cover", seller: "Amara Weaves", price: 1650, currency: "₹", img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=80", rating: 4.9, reviews: 93 },
-      { id: 8, title: "Botanical Letterpress Print", seller: "Studio Pressed", price: 1100, currency: "₹", img: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&q=80", rating: 4.6, reviews: 61, tag: "Sale" },
+      { id: 'p1', title: "Moon Phase Ceramic Mug",          seller: "Priya's Pottery",   price: 1850, img: "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=400&q=80", rating: 4.9, reviews: 128, tag: "Bestseller" },
+      { id: 'p2', title: "Hand-forged Silver Ring",          seller: "Marco Forges",      price: 4200, img: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&q=80", rating: 5.0, reviews: 57,  tag: "Custom" },
+      { id: 'p3', title: "Kente-pattern Wall Tapestry",      seller: "Amara Weaves",      price: 6800, img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80", rating: 4.8, reviews: 204, tag: "New" },
+      { id: 'p4', title: "Pressed Lavender Beeswax Candle",  seller: "Suki's Botanicals", price: 950,  img: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&q=80", rating: 4.9, reviews: 340, tag: null },
+      { id: 'p5', title: "Driftwood Serving Board",           seller: "Oak & Stone",       price: 2200, img: "https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=400&q=80", rating: 4.7, reviews: 89,  tag: "Eco" },
+      { id: 'p6', title: "Macramé Plant Hanger Set",          seller: "Knotted & Kind",    price: 1400, img: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=80", rating: 4.8, reviews: 176, tag: null },
+      { id: 'p7', title: "Hand-dyed Indigo Cushion Cover",    seller: "Amara Weaves",      price: 1650, img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=80", rating: 4.9, reviews: 93,  tag: null },
+      { id: 'p8', title: "Botanical Letterpress Print",       seller: "Studio Pressed",    price: 1100, img: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&q=80", rating: 4.6, reviews: 61,  tag: "Sale" },
     ];
 
     const grid = document.getElementById('featuredGrid');
@@ -769,34 +803,23 @@
           <button class="product-wishlist" onclick="event.preventDefault();this.classList.toggle('active')" aria-label="Wishlist">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           </button>
-          <button class="product-quick-add" onclick="event.preventDefault();addToCart(${p.id})">+ Add to Cart</button>
+          <button class="product-quick-add" onclick="event.preventDefault();addToCartShared('${p.id}','${p.title.replace(/'/g,"\\'")}')">+ Add to Cart</button>
         </div>
         <div class="product-info">
           <span class="product-seller">${p.seller}</span>
           <h3 class="product-title">${p.title}</h3>
           <div class="product-meta">
             <span class="product-rating">★ ${p.rating} <span class="review-count">(${p.reviews})</span></span>
-            <span class="product-price">${p.currency}${p.price.toLocaleString()}</span>
+            <span class="product-price">₹${p.price.toLocaleString()}</span>
           </div>
-        </div>
-      `;
+        </div>`;
       grid.appendChild(card);
       setTimeout(() => revealObs.observe(card), 50);
     });
 
-    // ─── Cart ───
-    function addToCart(id) {
-      let cart = JSON.parse(localStorage.getItem('cn_cart') || '[]');
-      if (!cart.includes(id)) cart.push(id);
-      localStorage.setItem('cn_cart', JSON.stringify(cart));
-      const badge = document.getElementById('cartBadge');
-      badge.textContent = cart.length;
-      badge.classList.add('pop');
-      setTimeout(() => badge.classList.remove('pop'), 300);
-    }
-    // Load cart count
-    const savedCart = JSON.parse(localStorage.getItem('cn_cart') || '[]');
-    document.getElementById('cartBadge').textContent = savedCart.length;
+    // ─── Cart badge on load (read cn_cart_v2) ───
+    const savedCart = JSON.parse(localStorage.getItem('cn_cart_v2') || '{"items":[]}');
+    document.getElementById('cartBadge').textContent = (savedCart.items || []).reduce((s, i) => s + i.quantity, 0);
 
     // ─── Testimonials slider ───
     const track = document.getElementById('testimonialsTrack');
@@ -805,7 +828,7 @@
     function goToSlide(i) {
       currentSlide = i;
       const cards = track.querySelectorAll('.testimonial-card');
-      const w = cards[0].offsetWidth + 24; // gap
+      const w = cards[0].offsetWidth + 24;
       track.style.transform = `translateX(-${i * w}px)`;
       dots.forEach((d, j) => d.classList.toggle('active', j === i));
     }
