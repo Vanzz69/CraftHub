@@ -1,70 +1,57 @@
 /**
  * CRAFTNEST — CURSOR.JS
- * Custom cursor for all pages.
- * Usage: <script type="module" src="../js/cursor.js"></script>
+ * Plain script (not a module) — works on all pages.
+ * Add at bottom of <body>:
+ *   <script src="../js/cursor.js"></script>
  */
+(function() {
+  // Skip on touch devices
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
-// Only run on non-touch devices
-if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-  // Inject cursor elements if not already in DOM
-  if (!document.getElementById('cursor')) {
-    const c = document.createElement('div');
-    c.id = 'cursor';
-    c.className = 'cursor';
-    document.body.appendChild(c);
+  // Inject cursor divs if not already in page
+  function ensureEl(id, cls) {
+    var el = document.getElementById(id);
+    if (!el) {
+      el = document.createElement('div');
+      el.id = id;
+      el.className = cls;
+      document.body.appendChild(el);
+    }
+    return el;
   }
-  if (!document.getElementById('cursorFollower')) {
-    const f = document.createElement('div');
-    f.id = 'cursorFollower';
-    f.className = 'cursor-follower';
-    document.body.appendChild(f);
-  }
 
-  const cursor   = document.getElementById('cursor');
-  const follower = document.getElementById('cursorFollower');
+  var cursor   = ensureEl('cursor', 'cursor');
+  var follower = ensureEl('cursorFollower', 'cursor-follower');
 
-  let mx = 0, my = 0, fx = 0, fy = 0;
+  var mx = 0, my = 0, fx = 0, fy = 0;
 
-  document.addEventListener('mousemove', e => {
+  document.addEventListener('mousemove', function(e) {
     mx = e.clientX;
     my = e.clientY;
-    cursor.style.transform = `translate(${mx}px, ${my}px)`;
+    cursor.style.transform = 'translate(' + mx + 'px,' + my + 'px)';
   });
 
-  function animateFollower() {
+  (function loop() {
     fx += (mx - fx) * 0.1;
     fy += (my - fy) * 0.1;
-    follower.style.transform = `translate(${fx}px, ${fy}px)`;
-    requestAnimationFrame(animateFollower);
-  }
-  animateFollower();
+    follower.style.transform = 'translate(' + fx + 'px,' + fy + 'px)';
+    requestAnimationFrame(loop);
+  })();
 
-  // Hover states on interactive elements
   function bindHover() {
-    document.querySelectorAll('a, button, [role="button"], input, select, textarea, label').forEach(el => {
-      el.addEventListener('mouseenter', () => {
-        cursor.classList.add('hover');
-        follower.classList.add('hover');
-      });
-      el.addEventListener('mouseleave', () => {
-        cursor.classList.remove('hover');
-        follower.classList.remove('hover');
-      });
+    document.querySelectorAll('a, button, input, select, textarea, label, [role="button"]').forEach(function(el) {
+      if (el._cursorBound) return;
+      el._cursorBound = true;
+      el.addEventListener('mouseenter', function() { cursor.classList.add('hover'); follower.classList.add('hover'); });
+      el.addEventListener('mouseleave', function() { cursor.classList.remove('hover'); follower.classList.remove('hover'); });
     });
   }
 
-  // Bind on load + re-bind when DOM changes (for dynamically rendered cards)
+  // Bind immediately + watch for dynamically added elements
   bindHover();
-  const observer = new MutationObserver(bindHover);
-  observer.observe(document.body, { childList: true, subtree: true });
+  var obs = new MutationObserver(bindHover);
+  obs.observe(document.body, { childList: true, subtree: true });
 
-  // Hide cursor when mouse leaves window
-  document.addEventListener('mouseleave', () => {
-    cursor.style.opacity   = '0';
-    follower.style.opacity = '0';
-  });
-  document.addEventListener('mouseenter', () => {
-    cursor.style.opacity   = '1';
-    follower.style.opacity = '0.5';
-  });
-}
+  document.addEventListener('mouseleave', function() { cursor.style.opacity = '0'; follower.style.opacity = '0'; });
+  document.addEventListener('mouseenter', function() { cursor.style.opacity = '1'; follower.style.opacity = '0.5'; });
+})();
