@@ -977,20 +977,19 @@
   };
 
   /* ══════════════════════════════════════════
-     ADD TO CART
+     ADD TO CART — uses cn_cart_v2 (same key as cart.html)
   ══════════════════════════════════════════ */
-  window.handleAddToCart = async (productId, title) => {
-    try {
-      await addToCart(productId, 1);
-    } catch {
-      let cart = JSON.parse(localStorage.getItem('cn_cart_v2') || '{"items":[]}');
-      const idx = cart.items.findIndex(i => i.productId === productId);
-      if (idx > -1) cart.items[idx].quantity++;
-      else cart.items.push({ productId, quantity:1, variant:null, addedAt:Date.now() });
-      localStorage.setItem('cn_cart_v2', JSON.stringify(cart));
-    }
-    showToast(`"${title}" added to cart 🛍️`, 'success');
-    updateCartBadge();
+  window.handleAddToCart = function(productId, title) {
+    var data = JSON.parse(localStorage.getItem('cn_cart_v2') || '{"items":[]}');
+    if (!data.items) data.items = [];
+    var idx = data.items.findIndex(function(i) { return i.productId === String(productId); });
+    if (idx > -1) data.items[idx].quantity++;
+    else data.items.push({ productId: String(productId), quantity: 1, variant: null, addedAt: Date.now() });
+    localStorage.setItem('cn_cart_v2', JSON.stringify(data));
+    var count = data.items.reduce(function(s,i){ return s + i.quantity; }, 0);
+    var badge = document.getElementById('cartBadge');
+    if (badge) { badge.textContent = count; badge.classList.add('pop'); setTimeout(function(){ badge.classList.remove('pop'); }, 300); }
+    showToast('"' + (title||'Item') + '" added to cart 🛍️', 'success');
   };
 
   function updateCartBadge() {
@@ -1049,5 +1048,6 @@
   applyFilters();
 </script>
 
+<script src="../js/cursor.js"></script>
 </body>
 </html>
