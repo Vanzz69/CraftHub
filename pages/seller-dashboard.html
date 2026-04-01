@@ -1226,7 +1226,7 @@ import { watchAuth, getCurrentUserProfile, getSellerOrders, deleteProduct, updat
 ══════════════════════════════════════════ */
 const DEMO_STATS = { revenue: 124800, orders: 47, views: 4821, rating: 4.97 };
 
-const DEMO_PRODUCTS = [
+const DEFAULT_PRODUCTS = [
   { id:"p1",  title:"Moon Phase Ceramic Mug",      price:1850, img:"https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=300&q=80", views:1204, sales:128, rating:4.9, status:"active",   tag:"Bestseller" },
   { id:"p9",  title:"Stoneware Espresso Set (×4)",  price:3200, img:"https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=300&q=80", views:887,  sales:211, rating:4.9, status:"active",   tag:null },
   { id:"p17", title:"Raku-fired Sake Set",           price:4800, img:"https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=300&q=80", views:342,  sales:29,  rating:5.0, status:"active",   tag:"New" },
@@ -1234,6 +1234,20 @@ const DEMO_PRODUCTS = [
   { id:"pb2", title:"Speckled Bud Vase",            price:1200, img:"https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&q=80", views:419,  sales:55,  rating:4.7, status:"draft",    tag:"Sale" },
   { id:"pb3", title:"Folk Motif Dinner Plate",      price:2800, img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=300&q=80", views:177,  sales:18,  rating:5.0, status:"active",   tag:"Custom" },
 ];
+
+// Load from localStorage so added products persist across refreshes
+function loadDemoProducts() {
+  try {
+    const saved = localStorage.getItem("cn_seller_products");
+    return saved ? JSON.parse(saved) : [...DEFAULT_PRODUCTS];
+  } catch { return [...DEFAULT_PRODUCTS]; }
+}
+
+function saveDemoProducts() {
+  localStorage.setItem("cn_seller_products", JSON.stringify(DEMO_PRODUCTS));
+}
+
+const DEMO_PRODUCTS = loadDemoProducts();
 
 const DEMO_ORDERS = [
   { id:"CN-A4B9X", product:"Moon Phase Ceramic Mug",  buyer:"Neha R.",   qty:1, date:"30 Mar 2025", amount:1850, status:"pending" },
@@ -1433,6 +1447,7 @@ window.confirmDeleteProduct = function(id) {
   if (confirm("Are you sure you want to delete this listing? This cannot be undone.")) {
     const idx = DEMO_PRODUCTS.findIndex(p => p.id === id);
     if (idx > -1) DEMO_PRODUCTS.splice(idx, 1);
+    saveDemoProducts();
     renderProductsPanel();
     showToastGlobal("Listing deleted.", "info");
   }
@@ -1482,6 +1497,7 @@ window.submitNewProduct = function() {
   };
 
   DEMO_PRODUCTS.unshift(newProd);
+  saveDemoProducts();
   showToastGlobal("Product listed successfully! 🎉", "success");
   document.getElementById("addProductForm").reset();
   document.getElementById("mainImgPreview").style.display = "none";
@@ -1608,5 +1624,6 @@ renderOrdersTable("allOrdersBody", DEMO_ORDERS, true);
 initEarnings();
 </script>
 
+<script type="module" src="../js/cursor.js"></script>
 </body>
 </html>
