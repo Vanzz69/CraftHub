@@ -857,14 +857,43 @@ import { watchAuth, getCurrentUserProfile, clearCart, placeOrder as fbPlaceOrder
    In production, fetch each productId from Firestore
 ══════════════════════════════════════════ */
 const CATALOGUE = {
-  p1:  { title:"Moon Phase Ceramic Mug",        seller:"Priya's Pottery",   sellerId:"seller1", sellerAvatar:"https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=60&q=80", price:1850, img:"https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=200&q=80" },
-  p2:  { title:"Hand-forged Silver Ring",        seller:"Marco Forges",      sellerId:"seller2", sellerAvatar:"https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=60&q=80", price:4200, img:"https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=200&q=80" },
-  p3:  { title:"Kente-pattern Wall Tapestry",    seller:"Amara Weaves",      sellerId:"seller3", sellerAvatar:"https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=60&q=80", price:6800, img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=80" },
-  p4:  { title:"Pressed Lavender Candle",        seller:"Suki's Botanicals", sellerId:"seller4", sellerAvatar:"https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&q=80", price:950,  img:"https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=200&q=80" },
-  p5:  { title:"Driftwood Serving Board",        seller:"Oak & Stone",       sellerId:"seller5", sellerAvatar:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&q=80", price:2200, img:"https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=200&q=80" },
-  p9:  { title:"Stoneware Espresso Set",         seller:"Priya's Pottery",   sellerId:"seller1", sellerAvatar:"https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=60&q=80", price:3200, img:"https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=200&q=80" },
-  p17: { title:"Raku-fired Sake Set",            seller:"Priya's Pottery",   sellerId:"seller1", sellerAvatar:"https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=60&q=80", price:4800, img:"https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=200&q=80" },
+  p1:  { title:"Moon Phase Ceramic Mug",         seller:"Priya's Pottery",   sellerId:"seller1", sellerAvatar:"https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=60&q=80",  price:1850, img:"https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=200&q=80" },
+  p2:  { title:"Hand-forged Silver Ring",         seller:"Marco Forges",      sellerId:"seller2", sellerAvatar:"https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=60&q=80",  price:4200, img:"https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=200&q=80" },
+  p3:  { title:"Kente-pattern Wall Tapestry",     seller:"Amara Weaves",      sellerId:"seller3", sellerAvatar:"https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=60&q=80",  price:6800, img:"https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&q=80" },
+  p4:  { title:"Pressed Lavender Candle",         seller:"Suki's Botanicals", sellerId:"seller4", sellerAvatar:"https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&q=80",  price:950,  img:"https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=200&q=80" },
+  p5:  { title:"Driftwood Serving Board",         seller:"Oak & Stone",       sellerId:"seller5", sellerAvatar:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&q=80",  price:2200, img:"https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=200&q=80" },
+  p6:  { title:"Macramé Plant Hanger Set",        seller:"Knotted & Kind",    sellerId:"seller6", sellerAvatar:"https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=60&q=80",  price:1400, img:"https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&q=80" },
+  p7:  { title:"Hand-dyed Indigo Cushion Cover",  seller:"Amara Weaves",      sellerId:"seller3", sellerAvatar:"https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=60&q=80",  price:1650, img:"https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=200&q=80" },
+  p8:  { title:"Botanical Letterpress Print",     seller:"Studio Pressed",    sellerId:"seller7", sellerAvatar:"https://images.unsplash.com/photo-1580489944761-15a19d654956?w=60&q=80",  price:1100, img:"https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=200&q=80" },
+  p9:  { title:"Stoneware Espresso Set",          seller:"Priya's Pottery",   sellerId:"seller1", sellerAvatar:"https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=60&q=80",  price:3200, img:"https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=200&q=80" },
+  p10: { title:"Hammered Copper Earrings",        seller:"Marco Forges",      sellerId:"seller2", sellerAvatar:"https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=60&q=80",  price:1800, img:"https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=200&q=80" },
+  p11: { title:"Hand-carved Neem Comb",           seller:"Oak & Stone",       sellerId:"seller5", sellerAvatar:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&q=80",  price:450,  img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&q=80" },
+  p12: { title:"Soy Wax Sandalwood Candle",       seller:"Suki's Botanicals", sellerId:"seller4", sellerAvatar:"https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&q=80",  price:820,  img:"https://images.unsplash.com/photo-1603006905003-be475563bc59?w=200&q=80" },
+  p13: { title:"Woven Jute Market Bag",           seller:"Knotted & Kind",    sellerId:"seller6", sellerAvatar:"https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=60&q=80",  price:680,  img:"https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=200&q=80" },
+  p14: { title:"Abstract Watercolour Print",      seller:"Studio Pressed",    sellerId:"seller7", sellerAvatar:"https://images.unsplash.com/photo-1580489944761-15a19d654956?w=60&q=80",  price:1900, img:"https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=200&q=80" },
+  p15: { title:"Leather Journal Cover (A5)",      seller:"Hide & Seek Co.",   sellerId:"seller8", sellerAvatar:"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&q=80",  price:2800, img:"https://images.unsplash.com/photo-1544816155-12df9643f363?w=200&q=80" },
+  p16: { title:"Hand-stamped Linen Tote",         seller:"Amara Weaves",      sellerId:"seller3", sellerAvatar:"https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=60&q=80",  price:1250, img:"https://images.unsplash.com/photo-1591085686350-798c0f9faa7f?w=200&q=80" },
+  p17: { title:"Raku-fired Sake Set",             seller:"Priya's Pottery",   sellerId:"seller1", sellerAvatar:"https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=60&q=80",  price:4800, img:"https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=200&q=80" },
+  p18: { title:"Felted Wool Coasters (Set of 6)", seller:"Knotted & Kind",    sellerId:"seller6", sellerAvatar:"https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=60&q=80",  price:750,  img:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80" },
+  p19: { title:"Carved Mango Wood Bowl",          seller:"Oak & Stone",       sellerId:"seller5", sellerAvatar:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&q=80",  price:1600, img:"https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&q=80" },
+  p20: { title:"Minimalist Gold Leaf Ring",       seller:"Marco Forges",      sellerId:"seller2", sellerAvatar:"https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=60&q=80",  price:3500, img:"https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=200&q=80" },
+  p21: { title:"Linocut Bird Print",              seller:"Studio Pressed",    sellerId:"seller7", sellerAvatar:"https://images.unsplash.com/photo-1580489944761-15a19d654956?w=60&q=80",  price:850,  img:"https://images.unsplash.com/photo-1578301978018-3005759f48f7?w=200&q=80" },
+  p22: { title:"Patchwork Throw Blanket",         seller:"Amara Weaves",      sellerId:"seller3", sellerAvatar:"https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=60&q=80",  price:5200, img:"https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&q=80" },
+  p23: { title:"Rose & Clary Sage Soap Bar",      seller:"Suki's Botanicals", sellerId:"seller4", sellerAvatar:"https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&q=80",  price:380,  img:"https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=200&q=80" },
+  p24: { title:"Hand-tooled Leather Wallet",      seller:"Hide & Seek Co.",   sellerId:"seller8", sellerAvatar:"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&q=80",  price:3100, img:"https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=200&q=80" },
 };
+
+// Also handle any custom seller-added products stored in localStorage
+const sellerProducts = JSON.parse(localStorage.getItem("cn_seller_products") || "[]");
+sellerProducts.forEach(p => {
+  if (!CATALOGUE[p.id]) {
+    CATALOGUE[p.id] = {
+      title: p.title, seller: "My Shop", sellerId: "seller1",
+      sellerAvatar: "https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=60&q=80",
+      price: p.price, img: p.img || p.images?.[0] || "",
+    };
+  }
+});
 
 const SUGGESTIONS = [
   { id:"p6",  title:"Macramé Hanger", price:1400, img:"https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=200&q=80" },
@@ -889,15 +918,6 @@ let shippingCost = 0;
 function loadCart() {
   const raw = JSON.parse(localStorage.getItem("cn_cart_v2") || '{"items":[]}');
   cartItems = raw.items || [];
-
-  // Seed demo items if cart is empty (for demo purposes)
-  if (!cartItems.length) {
-    cartItems = [
-      { productId:"p1", quantity:1, variant:null, addedAt: Date.now() },
-      { productId:"p4", quantity:2, variant:null, addedAt: Date.now() },
-    ];
-    saveCart();
-  }
 
   renderCart();
   updateSummary();
@@ -1303,5 +1323,6 @@ document.getElementById("hamburger").addEventListener("click", function() {
 loadCart();
 </script>
 
+<script type="module" src="../js/cursor.js"></script>
 </body>
 </html>
