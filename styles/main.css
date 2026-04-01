@@ -561,7 +561,7 @@ p {
   align-items: center;
   overflow: hidden;
   background: var(--cream);
-  padding-top: var(--nav-h);
+  /* No padding-top here — hero-content handles navbar offset */
 }
 
 /* Animated gradient background */
@@ -659,7 +659,7 @@ p {
   position: relative;
   z-index: 2;
   max-width: 700px;
-  padding: calc(var(--nav-h) + var(--space-3xl)) var(--space-xl) var(--space-3xl);
+  padding: calc(var(--nav-h) + var(--space-xl)) var(--space-xl) var(--space-2xl);
   margin-left: max(var(--space-xl), calc((100vw - var(--max-width)) / 2 + var(--space-xl)));
 }
 
