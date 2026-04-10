@@ -24,11 +24,17 @@
   var follower = ensureEl('cursorFollower', 'cursor-follower');
 
   var mx = 0, my = 0, fx = 0, fy = 0;
+  var visible = false;
 
   document.addEventListener('mousemove', function(e) {
     mx = e.clientX;
     my = e.clientY;
     cursor.style.transform = 'translate(' + mx + 'px,' + my + 'px)';
+    if (!visible) {
+      visible = true;
+      cursor.style.opacity = '1';
+      follower.style.opacity = '0.5';
+    }
   });
 
   (function loop() {
@@ -52,6 +58,14 @@
   var obs = new MutationObserver(bindHover);
   obs.observe(document.body, { childList: true, subtree: true });
 
-  document.addEventListener('mouseleave', function() { cursor.style.opacity = '0'; follower.style.opacity = '0'; });
-  document.addEventListener('mouseenter', function() { cursor.style.opacity = '1'; follower.style.opacity = '0.5'; });
+  document.addEventListener('mouseleave', function() {
+    cursor.style.opacity = '0';
+    follower.style.opacity = '0';
+  });
+  document.addEventListener('mouseenter', function() {
+    if (visible) {
+      cursor.style.opacity = '1';
+      follower.style.opacity = '0.5';
+    }
+  });
 })();
