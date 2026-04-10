@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CraftNest — Handmade Marketplace</title>
+  <meta name="theme-color" content="#FFFBF4" />
+  <meta name="msapplication-navbutton-color" content="#FFFBF4" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/components.css" />
+  <style>
+    /* ── Index-page mobile overrides ── */
+
+    /* Always show navbar bg on index so hero text isn't hidden behind transparent bar */
+    #navbar {
+      background: rgba(251, 246, 239, 0.97);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 var(--border);
+    }
+    @media (max-width: 480px) {
+      /* Sellers section watermark too large on mobile */
+      .sellers-section::before { font-size: 3.5rem; }
+
+      /* Featured section header stacks vertically */
+      .featured-section .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+      }
+
+      /* Products grid 2-col on small screens */
+      #featuredGrid { grid-template-columns: repeat(2, 1fr); gap: var(--space-sm); }
+
+      /* CTA banner buttons full width */
+      .cta-banner .btn-primary,
+      .cta-banner .btn-outline { max-width: 100%; }
+
+      /* Footer social row centered */
+      .footer-social { justify-content: flex-start; }
+
+      /* Hero stat grid for tiny screens */
+      .hero-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-md);
+        width: 100%;
+      }
+      .hero-stats .stat:last-child {
+        grid-column: 1 / -1;
+        text-align: center;
+      }
+    }
+
+    /* Ensure hero never hides behind fixed navbar on any screen */
+    .hero { padding-top: 0 !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Custom Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-follower" id="cursorFollower"></div>
+
+  <!-- Noise Overlay -->
+  <div class="noise-overlay"></div>
+
+  <!-- ───────────── NAVBAR ───────────── -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">🪡</span>
+        <span class="logo-text">CraftNest</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="pages/marketplace.html">Explore</a></li>
+        <li><a href="#categories">Categories</a></li>
+        <li><a href="#sellers">Artisans</a></li>
+        <li><a href="#how">How it works</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="pages/marketplace.html" class="nav-search-btn" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </a>
+        <a href="pages/cart.html" class="nav-cart-btn" aria-label="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="cart-badge" id="cartBadge">0</span>
+        </a>
+        <a href="pages/auth.html" class="btn-nav-login">Sign in</a>
+        <a href="pages/auth.html?mode=register" class="btn-nav-join">Join Free</a>
+      </div>
+
+      <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="pages/marketplace.html">Explore</a>
+      <a href="#categories">Categories</a>
+      <a href="#sellers">Artisans</a>
+      <a href="#how">How it works</a>
+      <div class="mobile-menu-divider"></div>
+      <a href="pages/auth.html">Sign in</a>
+      <a href="pages/auth.html?mode=register" class="mobile-join">Join Free</a>
+    </div>
+  </nav>
+
+  <!-- ───────────── HERO ───────────── -->
+  <section class="hero" id="hero">
+    <!-- Floating blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <!-- Floating product cards (decorative, hidden on mobile via CSS) -->
+    <div class="hero-float-card float-card-1" data-depth="0.3">
+      <img src="https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=200&q=80" alt="Pottery" />
+      <span>Hand-thrown Ceramics</span>
+    </div>
+    <div class="hero-float-card float-card-2" data-depth="0.5">
+      <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=200&q=80" alt="Jewelry" />
+      <span>Artisan Jewelry</span>
+    </div>
+    <div class="hero-float-card float-card-3" data-depth="0.2">
+      <img src="https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=200&q=80" alt="Candle" />
+      <span>Beeswax Candles</span>
+    </div>
+
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span class="eyebrow-dot"></span>
+        <span>100% Handmade · 100% Real Makers</span>
+      </div>
+
+      <h1 class="hero-title">
+        <span class="line line-1">Where Every</span>
+        <span class="line line-2"><em>Craft</em> Has a</span>
+        <span class="line line-3">Story.</span>
+      </h1>
+
+      <p class="hero-sub">
+        Discover one-of-a-kind handmade goods from independent artisans.<br/>
+        From clay to thread — buy directly, support directly.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="pages/marketplace.html" class="btn-primary btn-hero">
+          <span>Start Exploring</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="pages/auth.html?mode=register&type=seller" class="btn-ghost btn-hero">
+          Sell Your Craft
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num" data-target="12400">0</span>
+          <span class="stat-label">Artisans</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num" data-target="89000">0</span>
+          <span class="stat-label">Handmade Items</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num" data-target="340000">0</span>
+          <span class="stat-label">Happy Buyers</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-scroll-hint">
+      <span>Scroll to discover</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ───────────── MARQUEE STRIP ───────────── -->
+  <div class="marquee-strip">
+    <div class="marquee-track">
+      <span>Ceramics</span><span class="dot">✦</span>
+      <span>Macramé</span><span class="dot">✦</span>
+      <span>Beeswax Candles</span><span class="dot">✦</span>
+      <span>Hand-dyed Textiles</span><span class="dot">✦</span>
+      <span>Wood Carving</span><span class="dot">✦</span>
+      <span>Forged Jewelry</span><span class="dot">✦</span>
+      <span>Botanical Prints</span><span class="dot">✦</span>
+      <span>Leatherwork</span><span class="dot">✦</span>
+      <span>Handmade Soaps</span><span class="dot">✦</span>
+      <span>Woven Baskets</span><span class="dot">✦</span>
+      <!-- duplicate for seamless loop -->
+      <span>Ceramics</span><span class="dot">✦</span>
+      <span>Macramé</span><span class="dot">✦</span>
+      <span>Beeswax Candles</span><span class="dot">✦</span>
+      <span>Hand-dyed Textiles</span><span class="dot">✦</span>
+      <span>Wood Carving</span><span class="dot">✦</span>
+      <span>Forged Jewelry</span><span class="dot">✦</span>
+      <span>Botanical Prints</span><span class="dot">✦</span>
+      <span>Leatherwork</span><span class="dot">✦</span>
+      <span>Handmade Soaps</span><span class="dot">✦</span>
+      <span>Woven Baskets</span><span class="dot">✦</span>
+    </div>
+  </div>
+
+  <!-- ───────────── CATEGORIES ───────────── -->
+  <section class="categories-section" id="categories">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Browse by craft</div>
+        <h2 class="section-title">Find Your <em>Favourite</em> Medium</h2>
+        <p class="section-sub">Every item shaped by human hands, not machines.</p>
+      </div>
+
+      <div class="categories-grid">
+        <a href="pages/marketplace.html?cat=ceramics" class="cat-card cat-large" data-cat="ceramics">
+          <div class="cat-img-wrap">
+            <img src="https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=600&q=80" alt="Ceramics" />
+          </div>
+          <div class="cat-info">
+            <h3>Ceramics & Pottery</h3>
+            <span>3,200+ items</span>
+          </div>
+          <div class="cat-hover-arrow">→</div>
+        </a>
+
+        <a href="pages/marketplace.html?cat=jewelry" class="cat-card" data-cat="jewelry">
+          <div class="cat-img-wrap">
+            <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&q=80" alt="Jewelry" />
+          </div>
+          <div class="cat-info">
+            <h3>Jewelry</h3>
+            <span>8,100+ items</span>
+          </div>
+          <div class="cat-hover-arrow">→</div>
+        </a>
+
+        <a href="pages/marketplace.html?cat=textiles" class="cat-card" data-cat="textiles">
+          <div class="cat-img-wrap">
+            <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400&q=80" alt="Textiles" />
+          </div>
+          <div class="cat-info">
+            <h3>Textiles & Weaving</h3>
+            <span>5,400+ items</span>
+          </div>
+          <div class="cat-hover-arrow">→</div>
+        </a>
+
+        <a href="pages/marketplace.html?cat=woodwork" class="cat-card" data-cat="woodwork">
+          <div class="cat-img-wrap">
+            <img src="https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=400&q=80" alt="Woodwork" />
+          </div>
+          <div class="cat-info">
+            <h3>Woodwork</h3>
+            <span>2,700+ items</span>
+          </div>
+          <div class="cat-hover-arrow">→</div>
+        </a>
+
+        <a href="pages/marketplace.html?cat=candles" class="cat-card" data-cat="candles">
+          <div class="cat-img-wrap">
+            <img src="https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&q=80" alt="Candles" />
+          </div>
+          <div class="cat-info">
+            <h3>Candles & Soaps</h3>
+            <span>4,500+ items</span>
+          </div>
+          <div class="cat-hover-arrow">→</div>
+        </a>
+
+        <a href="pages/marketplace.html?cat=art" class="cat-card" data-cat="art">
+          <div class="cat-img-wrap">
+            <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400&q=80" alt="Art" />
+          </div>
+          <div class="cat-info">
+            <h3>Art & Prints</h3>
+            <span>6,800+ items</span>
+          </div>
+          <div class="cat-hover-arrow">→</div>
+        </a>
+
+        <a href="pages/marketplace.html" class="cat-card cat-all">
+          <div class="cat-all-inner">
+            <span class="cat-all-icon">✦</span>
+            <h3>View All<br/>Categories</h3>
+            <span>40,000+ items</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────── FEATURED PRODUCTS ───────────── -->
+  <section class="featured-section" id="featured">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Hand-picked for you</div>
+        <h2 class="section-title">Trending This Week</h2>
+        <a href="pages/marketplace.html" class="section-link">See all →</a>
+      </div>
+
+      <div class="products-grid" id="featuredGrid">
+        <!-- Product Cards injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────── SELLER SPOTLIGHT ───────────── -->
+  <section class="sellers-section" id="sellers">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">The people behind the craft</div>
+        <h2 class="section-title">Meet Our <em>Artisans</em></h2>
+        <p class="section-sub">Real makers with real stories. Every purchase supports an independent creator.</p>
+      </div>
+
+      <div class="sellers-grid">
+        <a href="pages/seller-profile.html?id=1" class="seller-card">
+          <div class="seller-img-wrap">
+            <img src="https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=300&q=80" alt="Priya" />
+            <div class="seller-badge">⭐ Top Seller</div>
+          </div>
+          <div class="seller-info">
+            <h3>Priya's Pottery</h3>
+            <span class="seller-location">📍 Jaipur, India</span>
+            <p>Wheel-thrown stoneware inspired by Rajasthani landscapes and ancient folk motifs.</p>
+            <div class="seller-meta">
+              <span>847 sales</span>
+              <span>·</span>
+              <span>★ 4.97</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="pages/seller-profile.html?id=2" class="seller-card">
+          <div class="seller-img-wrap">
+            <img src="https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=300&q=80" alt="Marco" />
+            <div class="seller-badge">🔥 Rising Star</div>
+          </div>
+          <div class="seller-info">
+            <h3>Marco Forges</h3>
+            <span class="seller-location">📍 Florence, Italy</span>
+            <p>Third-generation blacksmith crafting heirloom jewelry from reclaimed metals.</p>
+            <div class="seller-meta">
+              <span>312 sales</span>
+              <span>·</span>
+              <span>★ 4.93</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="pages/seller-profile.html?id=3" class="seller-card">
+          <div class="seller-img-wrap">
+            <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=300&q=80" alt="Amara" />
+            <div class="seller-badge">💎 Verified</div>
+          </div>
+          <div class="seller-info">
+            <h3>Amara Weaves</h3>
+            <span class="seller-location">📍 Accra, Ghana</span>
+            <p>Kente-inspired handwoven textiles blending tradition with contemporary design.</p>
+            <div class="seller-meta">
+              <span>1,204 sales</span>
+              <span>·</span>
+              <span>★ 5.00</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="pages/seller-profile.html?id=4" class="seller-card">
+          <div class="seller-img-wrap">
+            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&q=80" alt="Suki" />
+          </div>
+          <div class="seller-info">
+            <h3>Suki's Botanicals</h3>
+            <span class="seller-location">📍 Kyoto, Japan</span>
+            <p>Slow-poured beeswax candles with pressed botanical specimens from her garden.</p>
+            <div class="seller-meta">
+              <span>2,109 sales</span>
+              <span>·</span>
+              <span>★ 4.99</span>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="sellers-cta">
+        <a href="pages/auth.html?mode=register&type=seller" class="btn-primary">
+          <span>Become a Seller</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────── HOW IT WORKS ───────────── -->
+  <section class="how-section" id="how">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Simple as that</div>
+        <h2 class="section-title">How CraftNest Works</h2>
+      </div>
+
+      <div class="how-tabs">
+        <button class="how-tab active" data-tab="buyers">For Buyers</button>
+        <button class="how-tab" data-tab="sellers">For Sellers</button>
+      </div>
+
+      <div class="how-content" id="howContent">
+        <!-- Buyers Steps -->
+        <div class="how-steps" data-for="buyers">
+          <div class="how-step">
+            <div class="step-num">01</div>
+            <div class="step-icon">🔍</div>
+            <h3>Discover</h3>
+            <p>Browse thousands of handmade goods filtered by craft, material, price, and maker location.</p>
+          </div>
+          <div class="how-step-arrow">⟶</div>
+          <div class="how-step">
+            <div class="step-num">02</div>
+            <div class="step-icon">💬</div>
+            <h3>Connect</h3>
+            <p>Message artisans directly. Ask for custom sizes, colours, or personalised engravings.</p>
+          </div>
+          <div class="how-step-arrow">⟶</div>
+          <div class="how-step">
+            <div class="step-num">03</div>
+            <div class="step-icon">🛍️</div>
+            <h3>Buy Securely</h3>
+            <p>Checkout is protected. Payment held until your item arrives safely.</p>
+          </div>
+          <div class="how-step-arrow">⟶</div>
+          <div class="how-step">
+            <div class="step-num">04</div>
+            <div class="step-icon">✨</div>
+            <h3>Treasure It</h3>
+            <p>Every piece comes with the maker's story card — a little piece of them with you.</p>
+          </div>
+        </div>
+
+        <!-- Sellers Steps -->
+        <div class="how-steps hidden" data-for="sellers">
+          <div class="how-step">
+            <div class="step-num">01</div>
+            <div class="step-icon">🧑‍🎨</div>
+            <h3>Create Profile</h3>
+            <p>Tell your story. Upload your workshop photos and describe your craft philosophy.</p>
+          </div>
+          <div class="how-step-arrow">⟶</div>
+          <div class="how-step">
+            <div class="step-num">02</div>
+            <div class="step-icon">📸</div>
+            <h3>List Products</h3>
+            <p>Add your items with beautiful photos, detailed descriptions, and your own pricing.</p>
+          </div>
+          <div class="how-step-arrow">⟶</div>
+          <div class="how-step">
+            <div class="step-num">03</div>
+            <div class="step-icon">💰</div>
+            <h3>Sell & Earn</h3>
+            <p>We take just 5% — one of the lowest fees in handmade marketplaces anywhere.</p>
+          </div>
+          <div class="how-step-arrow">⟶</div>
+          <div class="how-step">
+            <div class="step-num">04</div>
+            <div class="step-icon">📈</div>
+            <h3>Grow</h3>
+            <p>Analytics, repeat buyers, reviews — a full dashboard to help your craft business thrive.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────── TESTIMONIALS ───────────── -->
+  <section class="testimonials-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Real stories</div>
+        <h2 class="section-title">The CraftNest <em>Community</em></h2>
+      </div>
+
+      <div class="testimonials-track" id="testimonialsTrack">
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <blockquote>"I ordered a custom ceramic mug and received the most beautiful piece of art I own. Priya even included a handwritten note about the clay she used."</blockquote>
+          <div class="testimonial-author">
+            <img src="https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=60&q=80" alt="Neha" />
+            <div>
+              <strong>Neha R.</strong>
+              <span>Hyderabad, India</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <blockquote>"My sales tripled after joining CraftNest. The platform actually cares about makers. The 5% fee means I keep what I earn."</blockquote>
+          <div class="testimonial-author">
+            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&q=80" alt="Carlos" />
+            <div>
+              <strong>Carlos M.</strong>
+              <span>Seller · Mexico City</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <blockquote>"Found a one-of-a-kind hand-forged ring for my wedding. Marco customised it with our initials. I get compliments on it every single day."</blockquote>
+          <div class="testimonial-author">
+            <img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=60&q=80" alt="Aisha" />
+            <div>
+              <strong>Aisha T.</strong>
+              <span>London, UK</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <blockquote>"The seller dashboard is genuinely powerful — inventory tracking, buyer messages, earnings analytics. Built for real small businesses."</blockquote>
+          <div class="testimonial-author">
+            <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=60&q=80" alt="Suki" />
+            <div>
+              <strong>Suki W.</strong>
+              <span>Seller · Kyoto, Japan</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-dots" id="testimonialDots">
+        <span class="tdot active" data-i="0"></span>
+        <span class="tdot" data-i="1"></span>
+        <span class="tdot" data-i="2"></span>
+        <span class="tdot" data-i="3"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────── VALUES STRIP ───────────── -->
+  <section class="values-section">
+    <div class="container">
+      <div class="values-grid">
+        <div class="value-item">
+          <span class="value-icon">🤝</span>
+          <h4>Direct Connection</h4>
+          <p>Buy from the maker, not a middleman. Every message goes straight to the artisan.</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">🌱</span>
+          <h4>Sustainably Made</h4>
+          <p>Handmade means small batches, natural materials, and zero factory waste.</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">🛡️</span>
+          <h4>Buyer Protection</h4>
+          <p>Every order covered. If it's not as described, we make it right. No questions.</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">💛</span>
+          <h4>Makers First</h4>
+          <p>5% fee — that's it. The lowest in the space, because your craft deserves better.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────── CTA BANNER ───────────── -->
+  <section class="cta-banner">
+    <div class="cta-blob"></div>
+    <div class="cta-blob cta-blob-2"></div>
+    <div class="container">
+      <div class="cta-inner">
+        <h2>Ready to find something<br/><em>truly</em> one of a kind?</h2>
+        <p>Join 340,000+ buyers supporting independent makers worldwide.</p>
+        <div class="cta-buttons">
+          <a href="pages/marketplace.html" class="btn-primary btn-large">Explore the Market</a>
+          <a href="pages/auth.html?mode=register" class="btn-outline btn-large">Create Free Account</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────── FOOTER ───────────── -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="index.html" class="nav-logo">
+            <span class="logo-icon">🪡</span>
+            <span class="logo-text">CraftNest</span>
+          </a>
+          <p>A marketplace built for makers,<br/>by people who love handmade.</p>
+          <div class="footer-social">
+            <a href="#" aria-label="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+            <a href="#" aria-label="Pinterest">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.2 2.6 7.8 6.3 9.3-.1-.8-.1-2.1.1-3 .3-1.1 1.8-7.6 1.8-7.6s-.5-.9-.5-2.3c0-2.2 1.3-3.8 2.9-3.8 1.4 0 2 1 2 2.2 0 1.4-.9 3.4-1.3 5.3-.4 1.6.8 2.9 2.3 2.9 2.7 0 4.8-2.9 4.8-7 0-3.7-2.6-6.2-6.4-6.2-4.3 0-6.9 3.2-6.9 6.6 0 1.3.5 2.7 1.1 3.5.1.1.1.3.1.4-.1.5-.4 1.6-.4 1.8 0 .3-.2.4-.4.3C5.3 18.9 4 16.6 4 14c0-4.4 3.2-8.5 9.2-8.5 4.8 0 8.6 3.4 8.6 8 0 4.7-3 8.6-7.1 8.6-1.4 0-2.7-.7-3.1-1.5l-.9 3.3c-.3 1.2-1.1 2.7-1.7 3.6.9.3 1.8.4 2.8.4 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
+            </a>
+            <a href="#" aria-label="Twitter/X">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l16 16M4 20L20 4"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-links-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="pages/marketplace.html">All Products</a></li>
+            <li><a href="pages/marketplace.html?cat=ceramics">Ceramics</a></li>
+            <li><a href="pages/marketplace.html?cat=jewelry">Jewelry</a></li>
+            <li><a href="pages/marketplace.html?cat=textiles">Textiles</a></li>
+            <li><a href="pages/marketplace.html?cat=woodwork">Woodwork</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <h4>Sellers</h4>
+          <ul>
+            <li><a href="pages/auth.html?mode=register&type=seller">Start Selling</a></li>
+            <li><a href="pages/seller-dashboard.html">Dashboard</a></li>
+            <li><a href="#">Seller Guide</a></li>
+            <li><a href="#">Fees & Pricing</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About CraftNest</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Press</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2025 CraftNest. Made with ♥ for makers everywhere.</p>
+        <div class="footer-legal">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ─── Cursor (inline, no module needed) ───
+    (function() {
+      if (!window.matchMedia('(hover: hover)').matches) return;
+      const cursor   = document.getElementById('cursor');
+      const follower = document.getElementById('cursorFollower');
+      if (!cursor || !follower) return;
+      let mx = 0, my = 0, fx = 0, fy = 0;
+      document.addEventListener('mousemove', e => {
+        mx = e.clientX; my = e.clientY;
+        cursor.style.transform = `translate(${mx}px, ${my}px)`;
+      });
+      (function loop() {
+        fx += (mx - fx) * 0.1;
+        fy += (my - fy) * 0.1;
+        follower.style.transform = `translate(${fx}px, ${fy}px)`;
+        requestAnimationFrame(loop);
+      })();
+      document.querySelectorAll('a, button').forEach(el => {
+        el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); follower.classList.add('hover'); });
+        el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); follower.classList.remove('hover'); });
+      });
+    })();
+
+    // ─── Navbar scroll ───
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // ─── Hamburger ───
+    document.getElementById('hamburger').addEventListener('click', function() {
+      this.classList.toggle('open');
+      document.getElementById('mobileMenu').classList.toggle('open');
+    });
+
+    // ─── Parallax blobs on hero ───
+    document.addEventListener('mousemove', e => {
+      const { innerWidth: W, innerHeight: H } = window;
+      const dx = (e.clientX / W - 0.5) * 2;
+      const dy = (e.clientY / H - 0.5) * 2;
+      document.querySelectorAll('.blob').forEach((b, i) => {
+        const depth = [30, 20, 15][i];
+        b.style.transform = `translate(${dx * depth}px, ${dy * depth}px)`;
+      });
+      document.querySelectorAll('.hero-float-card').forEach(card => {
+        const d = parseFloat(card.dataset.depth) * 40;
+        card.style.transform = `translate(${dx * d}px, ${dy * d}px)`;
+      });
+    });
+
+    // ─── Counter animation ───
+    function animateCount(el) {
+      const target = parseInt(el.dataset.target);
+      const dur = 2000;
+      const step = target / (dur / 16);
+      let cur = 0;
+      const tick = () => {
+        cur = Math.min(cur + step, target);
+        el.textContent = Math.floor(cur).toLocaleString();
+        if (cur < target) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+    const statsObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          document.querySelectorAll('.stat-num').forEach(animateCount);
+          statsObs.disconnect();
+        }
+      });
+    }, { threshold: 0.5 });
+    const statsEl = document.querySelector('.hero-stats');
+    if (statsEl) statsObs.observe(statsEl);
+
+    // ─── Scroll reveal ───
+    const revealObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('revealed');
+          revealObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    document.querySelectorAll('.cat-card, .seller-card, .how-step, .value-item, .testimonial-card, .section-header').forEach(el => {
+      el.classList.add('reveal');
+      revealObs.observe(el);
+    });
+
+    // ─── How tabs ───
+    document.querySelectorAll('.how-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.how-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        const target = this.dataset.tab;
+        document.querySelectorAll('.how-steps').forEach(s => {
+          s.classList.toggle('hidden', s.dataset.for !== target);
+        });
+      });
+    });
+
+    // ─── Shared cart helper (uses cn_cart_v2 — same key as cart.html) ───
+    function addToCartShared(productId, title) {
+      let data = JSON.parse(localStorage.getItem('cn_cart_v2') || '{"items":[]}');
+      if (!data.items) data.items = [];
+      const idx = data.items.findIndex(i => i.productId === String(productId));
+      if (idx > -1) data.items[idx].quantity++;
+      else data.items.push({ productId: String(productId), quantity: 1, variant: null, addedAt: Date.now() });
+      localStorage.setItem('cn_cart_v2', JSON.stringify(data));
+      const count = data.items.reduce((s, i) => s + i.quantity, 0);
+      const badge = document.getElementById('cartBadge');
+      badge.textContent = count;
+      badge.classList.add('pop');
+      setTimeout(() => badge.classList.remove('pop'), 300);
+      // Simple toast
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.innerHTML = `✅ "${title || 'Item'}" added to cart`;
+      let tc = document.getElementById('toastContainer');
+      if (!tc) { tc = document.createElement('div'); tc.id='toastContainer'; tc.className='toast-container'; document.body.appendChild(tc); }
+      tc.appendChild(t);
+      setTimeout(() => t.remove(), 3500);
+    }
+
+    // ─── Featured Products (demo data) ───
+    const products = [
+      { id: 'p1', title: "Moon Phase Ceramic Mug",          seller: "Priya's Pottery",   price: 1850, img: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&q=80", rating: 4.9, reviews: 128, tag: "Bestseller" },
+      { id: 'p2', title: "Hand-forged Silver Ring",          seller: "Marco Forges",      price: 4200, img: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&q=80", rating: 5.0, reviews: 57,  tag: "Custom" },
+      { id: 'p3', title: "Kente-pattern Wall Tapestry",      seller: "Amara Weaves",      price: 6800, img: "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400&q=80", rating: 4.8, reviews: 204, tag: "New" },
+      { id: 'p4', title: "Pressed Lavender Beeswax Candle",  seller: "Suki's Botanicals", price: 950,  img: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&q=80", rating: 4.9, reviews: 340, tag: null },
+      { id: 'p5', title: "Driftwood Serving Board",           seller: "Oak & Stone",       price: 2200, img: "https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=400&q=80", rating: 4.7, reviews: 89,  tag: "Eco" },
+      { id: 'p6', title: "Macramé Plant Hanger Set",          seller: "Knotted & Kind",    price: 1400, img: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=80", rating: 4.8, reviews: 176, tag: null },
+      { id: 'p7', title: "Hand-dyed Indigo Cushion Cover",    seller: "Amara Weaves",      price: 1650, img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=80", rating: 4.9, reviews: 93,  tag: null },
+      { id: 'p8', title: "Botanical Letterpress Print",       seller: "Studio Pressed",    price: 1100, img: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400&q=80", rating: 4.6, reviews: 61,  tag: "Sale" },
+    ];
+
+    const grid = document.getElementById('featuredGrid');
+    products.forEach((p, i) => {
+      const card = document.createElement('a');
+      card.href = `pages/product.html?id=${p.id}`;
+      card.className = 'product-card reveal';
+      card.innerHTML = `
+        <div class="product-img-wrap">
+          <img src="${p.img}" alt="${p.title}" loading="lazy" />
+          ${p.tag ? `<span class="product-tag">${p.tag}</span>` : ''}
+          <button class="product-wishlist" onclick="event.preventDefault();this.classList.toggle('active')" aria-label="Wishlist">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+          <button class="product-quick-add" onclick="event.preventDefault();addToCartShared('${p.id}','${p.title.replace(/'/g,"\\'")}')">+ Add to Cart</button>
+        </div>
+        <div class="product-info">
+          <span class="product-seller">${p.seller}</span>
+          <h3 class="product-title">${p.title}</h3>
+          <div class="product-meta">
+            <span class="product-rating">★ ${p.rating} <span class="review-count">(${p.reviews})</span></span>
+            <span class="product-price">₹${p.price.toLocaleString()}</span>
+          </div>
+        </div>`;
+      grid.appendChild(card);
+      setTimeout(() => revealObs.observe(card), 50);
+    });
+
+    // ─── Cart badge on load (read cn_cart_v2) ───
+    const savedCart = JSON.parse(localStorage.getItem('cn_cart_v2') || '{"items":[]}');
+    document.getElementById('cartBadge').textContent = (savedCart.items || []).reduce((s, i) => s + i.quantity, 0);
+
+    // ─── Testimonials slider ───
+    const track = document.getElementById('testimonialsTrack');
+    const dots = document.querySelectorAll('.tdot');
+    let currentSlide = 0;
+    function goToSlide(i) {
+      currentSlide = i;
+      const cards = track.querySelectorAll('.testimonial-card');
+      const w = cards[0].offsetWidth + 24;
+      track.style.transform = `translateX(-${i * w}px)`;
+      dots.forEach((d, j) => d.classList.toggle('active', j === i));
+    }
+    dots.forEach(d => d.addEventListener('click', () => goToSlide(parseInt(d.dataset.i))));
+    setInterval(() => goToSlide((currentSlide + 1) % 4), 5000);
+
+    // ─── Hero title stagger ───
+    document.querySelectorAll('.hero-title .line').forEach((l, i) => {
+      l.style.animationDelay = `${i * 0.15 + 0.3}s`;
+    });
+  </script>
+</body>
+</html>
