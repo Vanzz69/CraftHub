@@ -158,7 +158,8 @@ input, textarea, select {
   z-index: 10000;
   margin-left: -4px;
   margin-top: -4px;
-  transition: transform 0.05s, background var(--dur-fast);
+  opacity: 0;
+  transition: transform 0.05s, background var(--dur-fast), opacity 0.3s;
   will-change: transform;
 }
 
@@ -172,7 +173,7 @@ input, textarea, select {
   z-index: 9999;
   margin-left: -18px;
   margin-top: -18px;
-  opacity: 0.5;
+  opacity: 0;
   transition: width var(--dur-med) var(--ease-out),
               height var(--dur-med) var(--ease-out),
               opacity var(--dur-med),
