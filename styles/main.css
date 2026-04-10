@@ -1,2145 +1,847 @@
-/* ═══════════════════════════════════════════════
-   CRAFTNEST — MAIN STYLESHEET
-   Warm & Earthy Handmade Marketplace
-   ═══════════════════════════════════════════════ */
-
-/* ── Google Fonts (backup inline) ── */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap');
-
-/* ─────────────────────────────────────────────
-   1. CSS VARIABLES / DESIGN TOKENS
-───────────────────────────────────────────── */
-:root {
-  accent-color: #C4622D;
-  color-scheme: light;
-  /* Core Palette — warm, earthy, artisan */
-  --clay:       #C4622D;
-  --clay-dark:  #9E4820;
-  --clay-light: #E08050;
-  --sand:       #F2E8D9;
-  --sand-dark:  #E8D8C0;
-  --parchment:  #FBF6EF;
-  --bark:       #4A2E1A;
-  --bark-light: #7A4F30;
-  --moss:       #5C6B3A;
-  --moss-light: #8A9E58;
-  --cream:      #FFFBF4;
-  --linen:      #F5EEE3;
-  --terracotta: #D4703A;
-  --ochre:      #C9922A;
-  --warm-white: #FEFCF8;
-
-  /* Text */
-  --text-primary:   #2A1A0E;
-  --text-secondary: #6B4C2A;
-  --text-muted:     #9E7C5A;
-  --text-inverse:   #FFFBF4;
-
-  /* UI */
-  --border:         rgba(74, 46, 26, 0.12);
-  --border-strong:  rgba(74, 46, 26, 0.25);
-  --shadow-sm:      0 2px 8px rgba(74, 46, 26, 0.08);
-  --shadow-md:      0 8px 32px rgba(74, 46, 26, 0.12);
-  --shadow-lg:      0 20px 60px rgba(74, 46, 26, 0.16);
-  --shadow-xl:      0 40px 100px rgba(74, 46, 26, 0.20);
-
-  /* Typography */
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-body:    'Lora', Georgia, serif;
-  --font-ui:      'DM Sans', system-ui, sans-serif;
-
-  /* Spacing */
-  --space-xs:  0.25rem;
-  --space-sm:  0.5rem;
-  --space-md:  1rem;
-  --space-lg:  1.5rem;
-  --space-xl:  2rem;
-  --space-2xl: 3rem;
-  --space-3xl: 5rem;
-  --space-4xl: 8rem;
-
-  /* Border radius */
-  --radius-sm:   6px;
-  --radius-md:   12px;
-  --radius-lg:   20px;
-  --radius-xl:   32px;
-  --radius-full: 9999px;
-
-  /* Transitions */
-  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --dur-fast:    150ms;
-  --dur-med:     300ms;
-  --dur-slow:    600ms;
-
-  /* Layout */
-  --max-width: 1280px;
-  --nav-h:     72px;
-}
-
-/* ─────────────────────────────────────────────
-   2. RESET & BASE
-───────────────────────────────────────────── */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html {
-  font-size: 16px;
-  scroll-behavior: smooth;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body {
-  font-family: var(--font-body);
-  background-color: var(--cream);
-  color: var(--text-primary);
-  line-height: 1.7;
-  overflow-x: hidden;
-  cursor: none; /* replaced by custom cursor */
-}
-
-@media (hover: none) {
-  body { cursor: auto; }
-  .cursor, .cursor-follower { display: none; }
-}
-
-img {
-  max-width: 100%;
-  display: block;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-ul { list-style: none; }
-
-button {
-  cursor: pointer;
-  border: none;
-  background: none;
-  font-family: inherit;
-}
-
-input, textarea, select {
-  font-family: var(--font-ui);
-  font-size: 1rem;
-}
-
-/* ─────────────────────────────────────────────
-   3. NOISE TEXTURE OVERLAY
-───────────────────────────────────────────── */
-.noise-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.025;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-  background-size: 200px 200px;
-}
-
-/* ─────────────────────────────────────────────
-   4. CUSTOM CURSOR
-───────────────────────────────────────────── */
-.cursor {
-  position: fixed;
-  width: 8px;
-  height: 8px;
-  background: var(--clay);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 10000;
-  margin-left: -4px;
-  margin-top: -4px;
-  opacity: 0;
-  transition: transform 0.05s, background var(--dur-fast), opacity 0.3s;
-  will-change: transform;
-}
-
-.cursor-follower {
-  position: fixed;
-  width: 36px;
-  height: 36px;
-  border: 1.5px solid var(--clay);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999;
-  margin-left: -18px;
-  margin-top: -18px;
-  opacity: 0;
-  transition: width var(--dur-med) var(--ease-out),
-              height var(--dur-med) var(--ease-out),
-              opacity var(--dur-med),
-              border-color var(--dur-fast);
-  will-change: transform;
-}
-
-.cursor.hover { background: var(--clay-dark); transform: scale(1.5) translate(-2px, -2px); }
-.cursor-follower.hover { width: 56px; height: 56px; margin-left: -28px; margin-top: -28px; opacity: 0.2; }
-
-/* ─────────────────────────────────────────────
-   5. TYPOGRAPHY
-───────────────────────────────────────────── */
-h1, h2, h3, h4, h5 {
-  font-family: var(--font-display);
-  line-height: 1.15;
-  color: var(--text-primary);
-}
-
-h1 { font-size: clamp(2.8rem, 6vw, 5.5rem); font-weight: 900; }
-h2 { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 700; }
-h3 { font-size: clamp(1.2rem, 2vw, 1.6rem); font-weight: 600; }
-h4 { font-size: 1.1rem; font-weight: 600; }
-
-em {
-  font-style: italic;
-  color: var(--clay);
-}
-
-p {
-  font-family: var(--font-body);
-  color: var(--text-secondary);
-  line-height: 1.75;
-}
-
-/* ─────────────────────────────────────────────
-   6. LAYOUT UTILITIES
-───────────────────────────────────────────── */
-.container {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 var(--space-xl);
-}
-
-@media (max-width: 768px) {
-  .container { padding: 0 var(--space-lg); }
-}
-
-.hidden { display: none !important; }
-
-/* ─────────────────────────────────────────────
-   7. SCROLL REVEAL ANIMATION
-───────────────────────────────────────────── */
-.reveal {
-  opacity: 0;
-  transform: translateY(32px);
-  transition: opacity 0.7s var(--ease-out),
-              transform 0.7s var(--ease-out);
-}
-
-.reveal.revealed {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Staggered children */
-.reveal:nth-child(2) { transition-delay: 0.08s; }
-.reveal:nth-child(3) { transition-delay: 0.16s; }
-.reveal:nth-child(4) { transition-delay: 0.24s; }
-.reveal:nth-child(5) { transition-delay: 0.32s; }
-.reveal:nth-child(6) { transition-delay: 0.40s; }
-.reveal:nth-child(7) { transition-delay: 0.48s; }
-.reveal:nth-child(8) { transition-delay: 0.56s; }
-
-/* ─────────────────────────────────────────────
-   8. NAVBAR
-───────────────────────────────────────────── */
-.navbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 1000;
-  height: var(--nav-h);
-  transition: background var(--dur-med), backdrop-filter var(--dur-med), box-shadow var(--dur-med);
-}
-
-.navbar.scrolled {
-  background: rgba(251, 246, 239, 0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 1px 0 var(--border), var(--shadow-sm);
-}
-
-.nav-inner {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 0 var(--space-xl);
-  height: 100%;
-  display: flex;
-  align-items: center;
-  gap: var(--space-xl);
-}
-
-.nav-logo {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  flex-shrink: 0;
-}
-
-.logo-icon {
-  font-size: 1.5rem;
-  animation: sway 3s ease-in-out infinite;
-}
-
-@keyframes sway {
-  0%, 100% { transform: rotate(-5deg); }
-  50%       { transform: rotate(5deg); }
-}
-
-.logo-text { letter-spacing: -0.02em; }
-
-.nav-links {
-  display: flex;
-  gap: var(--space-xl);
-  margin-left: auto;
-}
-
-.nav-links a {
-  font-family: var(--font-ui);
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  position: relative;
-  transition: color var(--dur-fast);
-}
-
-.nav-links a::after {
-  content: '';
-  position: absolute;
-  bottom: -3px; left: 0;
-  width: 0; height: 1.5px;
-  background: var(--clay);
-  transition: width var(--dur-med) var(--ease-out);
-}
-
-.nav-links a:hover { color: var(--clay); }
-.nav-links a:hover::after { width: 100%; }
-
-.nav-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
-
-.nav-search-btn,
-.nav-cart-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px; height: 38px;
-  border-radius: 50%;
-  color: var(--text-secondary);
-  transition: background var(--dur-fast), color var(--dur-fast);
-  position: relative;
-}
-
-.nav-search-btn:hover,
-.nav-cart-btn:hover {
-  background: var(--sand);
-  color: var(--clay);
-}
-
-.cart-badge {
-  position: absolute;
-  top: 0; right: 0;
-  min-width: 18px; height: 18px;
-  background: var(--clay);
-  color: white;
-  font-family: var(--font-ui);
-  font-size: 0.65rem;
-  font-weight: 700;
-  border-radius: 9px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 4px;
-  transition: transform var(--dur-fast) var(--ease-spring);
-}
-
-.cart-badge.pop { transform: scale(1.4); }
-
-.btn-nav-login {
-  font-family: var(--font-ui);
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius-full);
-  transition: color var(--dur-fast), background var(--dur-fast);
-}
-
-.btn-nav-login:hover {
-  color: var(--clay);
-  background: var(--sand);
-}
-
-.btn-nav-join {
-  font-family: var(--font-ui);
-  font-size: 0.875rem;
-  font-weight: 500;
-  background: var(--clay);
-  color: var(--warm-white);
-  padding: 0.5rem 1.25rem;
-  border-radius: var(--radius-full);
-  transition: background var(--dur-med), transform var(--dur-fast) var(--ease-spring);
-}
-
-.btn-nav-join:hover {
-  background: var(--clay-dark);
-  transform: translateY(-1px);
-}
-
-/* Hamburger */
-.nav-hamburger {
-  display: none;
-  flex-direction: column;
-  gap: 5px;
-  width: 28px;
-  padding: 4px;
-  margin-left: auto;
-}
-
-.nav-hamburger span {
-  display: block;
-  height: 2px;
-  background: var(--text-primary);
-  border-radius: 2px;
-  transition: transform var(--dur-med) var(--ease-out), opacity var(--dur-fast), width var(--dur-med);
-}
-
-.nav-hamburger span:nth-child(3) { width: 60%; }
-
-.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.nav-hamburger.open span:nth-child(2) { opacity: 0; }
-.nav-hamburger.open span:nth-child(3) { width: 100%; transform: translateY(-7px) rotate(-45deg); }
-
-/* Mobile Menu */
-.mobile-menu {
-  position: fixed;
-  top: var(--nav-h); left: 0; right: 0;
-  background: var(--parchment);
-  border-top: 1px solid var(--border);
-  padding: var(--space-lg) var(--space-xl);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-  transform: translateY(-110%);
-  transition: transform var(--dur-slow) var(--ease-out);
-  box-shadow: var(--shadow-lg);
-}
-
-.mobile-menu.open { transform: translateY(0); }
-
-.mobile-menu a {
-  font-family: var(--font-ui);
-  font-size: 1.1rem;
-  color: var(--text-primary);
-  padding: var(--space-sm) 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.mobile-menu-divider { height: 1px; background: var(--border-strong); margin: var(--space-sm) 0; }
-
-.mobile-join {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--clay);
-  color: var(--warm-white) !important;
-  border-radius: var(--radius-full);
-  padding: var(--space-md) !important;
-  border-bottom: none !important;
-  font-weight: 500;
-  margin-top: var(--space-sm);
-}
-
-@media (max-width: 960px) {
-  .nav-links, .btn-nav-login, .btn-nav-join { display: none; }
-  .nav-hamburger { display: flex; }
-  .nav-search-btn, .nav-cart-btn { display: flex; }
-}
-
-/* ─────────────────────────────────────────────
-   9. BUTTONS (GLOBAL)
-───────────────────────────────────────────── */
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-sm);
-  background: var(--clay);
-  color: var(--warm-white);
-  font-family: var(--font-ui);
-  font-size: 0.9rem;
-  font-weight: 500;
-  padding: 0.75rem 1.75rem;
-  border-radius: var(--radius-full);
-  border: 2px solid var(--clay);
-  transition: background var(--dur-med), transform var(--dur-fast) var(--ease-spring), box-shadow var(--dur-med);
-  cursor: pointer;
-}
-
-.btn-primary:hover {
-  background: var(--clay-dark);
-  border-color: var(--clay-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(196, 98, 45, 0.35);
-}
-
-.btn-primary svg {
-  transition: transform var(--dur-med) var(--ease-spring);
-}
-
-.btn-primary:hover svg { transform: translateX(4px); }
-
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-sm);
-  background: transparent;
-  color: var(--text-primary);
-  font-family: var(--font-ui);
-  font-size: 0.9rem;
-  font-weight: 500;
-  padding: 0.75rem 1.75rem;
-  border-radius: var(--radius-full);
-  border: 2px solid var(--border-strong);
-  transition: border-color var(--dur-med), background var(--dur-med), transform var(--dur-fast) var(--ease-spring);
-  cursor: pointer;
-}
-
-.btn-ghost:hover {
-  border-color: var(--clay);
-  background: var(--sand);
-  color: var(--clay);
-  transform: translateY(-2px);
-}
-
-.btn-outline {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-sm);
-  background: transparent;
-  color: var(--warm-white);
-  font-family: var(--font-ui);
-  font-size: 0.9rem;
-  font-weight: 500;
-  padding: 0.75rem 1.75rem;
-  border-radius: var(--radius-full);
-  border: 2px solid rgba(255,255,255,0.5);
-  transition: background var(--dur-med), border-color var(--dur-med), transform var(--dur-fast) var(--ease-spring);
-  cursor: pointer;
-}
-
-.btn-outline:hover {
-  background: rgba(255,255,255,0.15);
-  border-color: rgba(255,255,255,0.8);
-  transform: translateY(-2px);
-}
-
-.btn-large {
-  font-size: 1rem;
-  padding: 1rem 2.25rem;
-}
-
-.btn-hero { font-size: 1rem; padding: 0.875rem 2rem; }
-
-/* ─────────────────────────────────────────────
-   10. HERO
-───────────────────────────────────────────── */
-.hero {
-  position: relative;
-  min-height: 100svh;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  background: var(--cream);
-  /* No padding-top here — hero-content handles navbar offset */
-}
-
-/* Animated gradient background */
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 80% 60% at 70% 40%, rgba(196,98,45,0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 50% at 20% 80%, rgba(92,107,58,0.06) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 40% at 90% 90%, rgba(201,146,42,0.05) 0%, transparent 50%);
-  animation: heroGradientShift 12s ease-in-out infinite alternate;
-}
-
-@keyframes heroGradientShift {
-  0%   { opacity: 0.8; }
-  100% { opacity: 1.2; }
-}
-
-/* Blobs */
-.blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.4;
-  pointer-events: none;
-  will-change: transform;
-  animation: blobPulse 8s ease-in-out infinite;
-}
-
-.blob-1 {
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, rgba(196,98,45,0.3), transparent 70%);
-  top: -100px; right: 15%;
-  animation-delay: 0s;
-}
-
-.blob-2 {
-  width: 380px; height: 380px;
-  background: radial-gradient(circle, rgba(92,107,58,0.2), transparent 70%);
-  bottom: 10%; left: 5%;
-  animation-delay: -3s;
-}
-
-.blob-3 {
-  width: 300px; height: 300px;
-  background: radial-gradient(circle, rgba(201,146,42,0.25), transparent 70%);
-  top: 30%; right: 5%;
-  animation-delay: -6s;
-}
-
-@keyframes blobPulse {
-  0%, 100% { transform: scale(1); }
-  50%       { transform: scale(1.15); }
-}
-
-/* Floating cards — new orbit/drift animation */
-.hero-float-card {
-  position: absolute;
-  background: var(--parchment);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-sm);
-  box-shadow: var(--shadow-md);
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  font-family: var(--font-ui);
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  pointer-events: none;
-  backdrop-filter: blur(8px);
-  transition: transform 0.3s var(--ease-out);
-}
-
-.float-card-1 { top: 22%; right: 8%;  animation: driftA 9s ease-in-out infinite; }
-.float-card-2 { top: 55%; right: 4%;  animation: driftB 11s ease-in-out infinite; }
-.float-card-3 { top: 38%; right: 22%; animation: driftC 13s ease-in-out infinite; }
-
-.hero-float-card img {
-  width: 44px; height: 44px;
-  border-radius: var(--radius-sm);
-  object-fit: cover;
-}
-
-@keyframes driftA {
-  0%   { transform: translate(0px, 0px) rotate(0deg); }
-  25%  { transform: translate(-8px, -14px) rotate(-1.5deg); }
-  50%  { transform: translate(6px, -20px) rotate(1deg); }
-  75%  { transform: translate(10px, -8px) rotate(2deg); }
-  100% { transform: translate(0px, 0px) rotate(0deg); }
-}
-
-@keyframes driftB {
-  0%   { transform: translate(0px, 0px) rotate(0deg); }
-  30%  { transform: translate(12px, -16px) rotate(1.5deg); }
-  60%  { transform: translate(-6px, -22px) rotate(-2deg); }
-  80%  { transform: translate(-10px, -10px) rotate(-1deg); }
-  100% { transform: translate(0px, 0px) rotate(0deg); }
-}
-
-@keyframes driftC {
-  0%   { transform: translate(0px, 0px) rotate(0deg); }
-  20%  { transform: translate(-12px, -10px) rotate(-2deg); }
-  45%  { transform: translate(8px, -18px) rotate(1deg); }
-  70%  { transform: translate(14px, -6px) rotate(2.5deg); }
-  100% { transform: translate(0px, 0px) rotate(0deg); }
-}
-
-/* Hero content */
-.hero-content {
-  position: relative;
-  z-index: 2;
-  max-width: 700px;
-  padding: calc(var(--nav-h) + var(--space-xl)) var(--space-xl) var(--space-2xl);
-  margin-left: max(var(--space-xl), calc((100vw - var(--max-width)) / 2 + var(--space-xl)));
-}
-
-.hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-sm);
-  font-family: var(--font-ui);
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: var(--space-xl);
-  opacity: 0;
-  animation: fadeUp 0.8s var(--ease-out) 0.1s forwards;
-}
-
-.eyebrow-dot {
-  width: 6px; height: 6px;
-  background: var(--clay);
-  border-radius: 50%;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50%       { transform: scale(1.5); opacity: 0.6; }
-}
-
-.hero-title {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: var(--space-xl);
-}
-
-.hero-title .line {
-  display: block;
-  opacity: 0;
-  transform: translateY(40px);
-  animation: fadeUp 0.9s var(--ease-out) forwards;
-}
-
-.hero-title .line-2 { padding-left: 2rem; }
-.hero-title .line-3 {
-  color: var(--clay);
-  padding-left: 5rem;
-  font-style: italic;
-}
-
-.hero-sub {
-  font-size: 1.05rem;
-  color: var(--text-secondary);
-  line-height: 1.7;
-  margin-bottom: var(--space-2xl);
-  opacity: 0;
-  animation: fadeUp 0.8s var(--ease-out) 0.6s forwards;
-}
-
-.hero-cta-group {
-  display: flex;
-  gap: var(--space-md);
-  flex-wrap: wrap;
-  margin-bottom: var(--space-3xl);
-  opacity: 0;
-  animation: fadeUp 0.8s var(--ease-out) 0.75s forwards;
-}
-
-.hero-stats {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xl);
-  opacity: 0;
-  animation: fadeUp 0.8s var(--ease-out) 0.9s forwards;
-}
-
-.stat { text-align: left; }
-
-.stat-num {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1;
-}
-
-.stat-label {
-  font-family: var(--font-ui);
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.stat-divider {
-  width: 1px;
-  height: 40px;
-  background: var(--border-strong);
-  flex-shrink: 0;
-}
-
-/* Scroll hint */
-.hero-scroll-hint {
-  position: absolute;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-sm);
-  font-family: var(--font-ui);
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  opacity: 0;
-  animation: fadeUp 1s var(--ease-out) 1.5s forwards;
-}
-
-.scroll-line {
-  width: 1px;
-  height: 48px;
-  background: linear-gradient(to bottom, var(--clay), transparent);
-  animation: scrollLineAnim 2s ease-in-out infinite;
-}
-
-@keyframes scrollLineAnim {
-  0%   { transform: scaleY(0); transform-origin: top; }
-  50%  { transform: scaleY(1); transform-origin: top; }
-  51%  { transform: scaleY(1); transform-origin: bottom; }
-  100% { transform: scaleY(0); transform-origin: bottom; }
-}
-
-/* ─────────────────────────────────────────────
-   11. MARQUEE STRIP
-───────────────────────────────────────────── */
-.marquee-strip {
-  background: var(--bark);
-  color: var(--sand);
-  padding: 0.875rem 0;
-  overflow: hidden;
-  position: relative;
-}
-
-.marquee-strip::before,
-.marquee-strip::after {
-  content: '';
-  position: absolute;
-  top: 0; bottom: 0;
-  width: 80px;
-  z-index: 2;
-}
-.marquee-strip::before { left: 0; background: linear-gradient(to right, var(--bark), transparent); }
-.marquee-strip::after  { right: 0; background: linear-gradient(to left, var(--bark), transparent); }
-
-.marquee-track {
-  display: flex;
-  gap: var(--space-xl);
-  width: max-content;
-  animation: marqueeScroll 30s linear infinite;
-  font-family: var(--font-ui);
-  font-size: 0.82rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  align-items: center;
-}
-
-.marquee-track .dot {
-  color: var(--clay-light);
-  font-size: 0.6rem;
-}
-
-@keyframes marqueeScroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
-/* ─────────────────────────────────────────────
-   12. SECTION SHARED STYLES
-───────────────────────────────────────────── */
-.section-header {
-  margin-bottom: var(--space-3xl);
-}
-
-.section-tag {
-  display: inline-block;
-  font-family: var(--font-ui);
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--clay);
-  margin-bottom: var(--space-md);
-  position: relative;
-  padding-left: var(--space-lg);
-}
-
-.section-tag::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 50%;
-  transform: translateY(-50%);
-  width: 14px; height: 1.5px;
-  background: var(--clay);
-}
-
-.section-title {
-  margin-bottom: var(--space-md);
-}
-
-.section-sub {
-  font-size: 1rem;
-  max-width: 480px;
-  color: var(--text-muted);
-}
-
-.section-link {
-  font-family: var(--font-ui);
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--clay);
-  transition: gap var(--dur-fast);
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: var(--space-sm);
-}
-
-.section-link:hover { gap: 8px; }
-
-/* ─────────────────────────────────────────────
-   13. CATEGORIES
-───────────────────────────────────────────── */
-.categories-section {
-  padding: var(--space-4xl) 0;
-  background: var(--linen);
-  position: relative;
-}
-
-.categories-section::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(to right, transparent, var(--border-strong), transparent);
-}
-
-.categories-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: auto auto;
-  gap: var(--space-md);
-}
-
-.cat-card {
-  position: relative;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  background: var(--parchment);
-  border: 1px solid var(--border);
-  display: block;
-  transition: transform var(--dur-med) var(--ease-spring), box-shadow var(--dur-med);
-  aspect-ratio: 1;
-}
-
-.cat-card:hover {
-  transform: translateY(-6px) scale(1.01);
-  box-shadow: var(--shadow-lg);
-}
-
-.cat-large {
-  grid-column: 1 / 3;
-  grid-row: 1 / 3;
-  aspect-ratio: auto;
-}
-
-.cat-img-wrap {
-  position: absolute;
-  inset: 0;
-}
-
-.cat-img-wrap img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  transition: transform 0.7s var(--ease-out);
-}
-
-.cat-card:hover .cat-img-wrap img { transform: scale(1.06); }
-
-.cat-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(42,26,14,0.75) 0%, rgba(42,26,14,0.1) 50%, transparent 100%);
-  transition: opacity var(--dur-med);
-}
-
-.cat-card:hover::after { opacity: 0.9; }
-
-.cat-info {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  padding: var(--space-lg);
-  z-index: 2;
-}
-
-.cat-info h3 {
-  color: var(--warm-white);
-  font-size: 1.1rem;
-  margin-bottom: var(--space-xs);
-}
-
-.cat-large .cat-info h3 { font-size: 1.5rem; }
-
-.cat-info span {
-  font-family: var(--font-ui);
-  font-size: 0.78rem;
-  color: rgba(255,255,255,0.65);
-  letter-spacing: 0.04em;
-}
-
-.cat-hover-arrow {
-  position: absolute;
-  top: var(--space-lg); right: var(--space-lg);
-  z-index: 3;
-  color: var(--warm-white);
-  font-size: 1.2rem;
-  opacity: 0;
-  transform: translateX(-8px);
-  transition: opacity var(--dur-med), transform var(--dur-med) var(--ease-spring);
-}
-
-.cat-card:hover .cat-hover-arrow { opacity: 1; transform: translateX(0); }
-
-/* "All" card */
-.cat-all {
-  background: var(--bark);
-  border-color: var(--bark);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cat-all::after { display: none; }
-
-.cat-all-inner {
-  text-align: center;
-  padding: var(--space-lg);
-}
-
-.cat-all-icon {
-  display: block;
-  font-size: 1.8rem;
-  margin-bottom: var(--space-sm);
-  animation: rotateStar 8s linear infinite;
-}
-
-@keyframes rotateStar {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-.cat-all-inner h3 { color: var(--sand); font-size: 1rem; margin-bottom: var(--space-xs); }
-.cat-all-inner span { color: var(--bark-light); font-family: var(--font-ui); font-size: 0.78rem; }
-
-@media (max-width: 900px) {
-  .categories-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .cat-large { grid-column: 1 / 3; grid-row: auto; aspect-ratio: 16/9; }
-}
-
-@media (max-width: 560px) {
-  .categories-grid { grid-template-columns: 1fr; }
-  .cat-large { grid-column: auto; }
-}
-
-/* ─────────────────────────────────────────────
-   14. FEATURED PRODUCTS
-───────────────────────────────────────────── */
-.featured-section {
-  padding: var(--space-4xl) 0;
-  background: var(--cream);
-}
-
-.featured-section .section-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: var(--space-md);
-}
-
-.featured-section .section-header > div { /* left side */
-  flex: 1;
-}
-
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-lg);
-}
-
-@media (max-width: 1100px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 768px)  { .products-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 480px)  { .products-grid { grid-template-columns: 1fr; } }
-
-/* ─────────────────────────────────────────────
-   15. SELLERS SECTION
-───────────────────────────────────────────── */
-.sellers-section {
-  padding: var(--space-4xl) 0;
-  background: var(--sand);
-  position: relative;
-  overflow: hidden;
-}
-
-.sellers-section::before {
-  content: '"Every piece has a maker"';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-5deg);
-  font-family: var(--font-display);
-  font-size: clamp(4rem, 10vw, 9rem);
-  font-style: italic;
-  color: rgba(74,46,26,0.04);
-  white-space: nowrap;
-  pointer-events: none;
-  letter-spacing: -0.02em;
-}
-
-.sellers-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-lg);
-}
-
-@media (max-width: 1024px) { .sellers-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px)  { .sellers-grid { grid-template-columns: 1fr; } }
-
-.sellers-cta {
-  text-align: center;
-  margin-top: var(--space-3xl);
-}
-
-/* ─────────────────────────────────────────────
-   16. HOW IT WORKS
-───────────────────────────────────────────── */
-.how-section {
-  padding: var(--space-4xl) 0;
-  background: var(--linen);
-}
-
-.how-tabs {
-  display: flex;
-  gap: var(--space-sm);
-  background: var(--sand-dark);
-  border-radius: var(--radius-full);
-  padding: 4px;
-  width: fit-content;
-  margin: 0 auto var(--space-3xl);
-}
-
-.how-tab {
-  font-family: var(--font-ui);
-  font-size: 0.875rem;
-  font-weight: 500;
-  padding: 0.5rem 1.5rem;
-  border-radius: var(--radius-full);
-  color: var(--text-secondary);
-  transition: background var(--dur-med), color var(--dur-med), box-shadow var(--dur-med);
-}
-
-.how-tab.active {
-  background: var(--clay);
-  color: var(--warm-white);
-  box-shadow: 0 2px 12px rgba(196,98,45,0.3);
-}
-
-.how-steps {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-sm);
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.how-step {
-  flex: 1;
-  min-width: 160px;
-  max-width: 220px;
-  text-align: center;
-  padding: var(--space-xl);
-  background: var(--parchment);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  transition: transform var(--dur-med) var(--ease-spring), box-shadow var(--dur-med);
-}
-
-.how-step:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-md);
-}
-
-.step-num {
-  font-family: var(--font-display);
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--clay);
-  letter-spacing: 0.1em;
-  margin-bottom: var(--space-sm);
-}
-
-.step-icon {
-  font-size: 2rem;
-  margin-bottom: var(--space-md);
-  display: block;
-  animation: floatCard 4s ease-in-out infinite;
-}
-
-.how-step h3 {
-  font-size: 1rem;
-  margin-bottom: var(--space-sm);
-}
-
-.how-step p {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  line-height: 1.6;
-}
-
-.how-step-arrow {
-  font-size: 1.5rem;
-  color: var(--border-strong);
-  padding-top: 3.5rem;
-  flex-shrink: 0;
-}
-
-@media (max-width: 768px) { .how-step-arrow { display: none; } }
-
-/* ─────────────────────────────────────────────
-   17. TESTIMONIALS
-───────────────────────────────────────────── */
-.testimonials-section {
-  padding: var(--space-4xl) 0;
-  background: var(--bark);
-  overflow: hidden;
-}
-
-.testimonials-section .section-tag { color: var(--clay-light); }
-.testimonials-section .section-tag::before { background: var(--clay-light); }
-.testimonials-section .section-title { color: var(--warm-white); }
-
-.testimonials-track {
-  display: flex;
-  gap: var(--space-lg);
-  transition: transform 0.6s var(--ease-out);
-  padding-bottom: var(--space-md);
-}
-
-.testimonial-card {
-  flex: 0 0 calc(33.333% - var(--space-md));
-  min-width: 300px;
-  background: rgba(251,246,239,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: var(--radius-xl);
-  padding: var(--space-2xl);
-  backdrop-filter: blur(10px);
-  transition: transform var(--dur-med) var(--ease-spring), background var(--dur-med);
-}
-
-.testimonial-card:hover {
-  transform: translateY(-4px);
-  background: rgba(251,246,239,0.1);
-}
-
-.testimonial-stars {
-  color: var(--ochre);
-  font-size: 0.9rem;
-  letter-spacing: 2px;
-  margin-bottom: var(--space-md);
-}
-
-.testimonial-card blockquote {
-  font-family: var(--font-body);
-  font-style: italic;
-  font-size: 0.95rem;
-  color: rgba(251,246,239,0.85);
-  line-height: 1.7;
-  margin-bottom: var(--space-xl);
-}
-
-.testimonial-author {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-}
-
-.testimonial-author img {
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid rgba(255,255,255,0.2);
-}
-
-.testimonial-author strong {
-  display: block;
-  font-family: var(--font-ui);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--warm-white);
-}
-
-.testimonial-author span {
-  font-family: var(--font-ui);
-  font-size: 0.75rem;
-  color: rgba(251,246,239,0.5);
-}
-
-.testimonial-dots {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-sm);
-  margin-top: var(--space-2xl);
-}
-
-.tdot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.25);
-  cursor: pointer;
-  transition: background var(--dur-med), transform var(--dur-med) var(--ease-spring), width var(--dur-med);
-  border-radius: var(--radius-full);
-}
-
-.tdot.active { background: var(--clay-light); width: 24px; }
-
-@media (max-width: 900px) {
-  .testimonial-card { flex: 0 0 85vw; min-width: unset; }
-}
-
-/* ─────────────────────────────────────────────
-   18. VALUES SECTION
-───────────────────────────────────────────── */
-.values-section {
-  padding: var(--space-3xl) 0;
-  background: var(--parchment);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-
-.values-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-xl);
-}
-
-@media (max-width: 900px) { .values-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 480px) { .values-grid { grid-template-columns: 1fr; } }
-
-.value-item {
-  text-align: center;
-  padding: var(--space-xl) var(--space-lg);
-}
-
-.value-icon {
-  font-size: 2.2rem;
-  display: block;
-  margin-bottom: var(--space-md);
-}
-
-.value-item h4 {
-  margin-bottom: var(--space-sm);
-  color: var(--text-primary);
-}
-
-.value-item p {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  line-height: 1.6;
-}
-
-/* ─────────────────────────────────────────────
-   19. CTA BANNER
-───────────────────────────────────────────── */
-.cta-banner {
-  padding: var(--space-4xl) 0;
-  background: var(--clay);
-  position: relative;
-  overflow: hidden;
-  text-align: center;
-}
-
-.cta-blob {
-  position: absolute;
-  width: 500px; height: 500px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.06);
-  top: -150px; left: -100px;
-  animation: blobPulse 10s ease-in-out infinite;
-}
-
-.cta-blob-2 {
-  top: auto; left: auto;
-  bottom: -200px; right: -80px;
-  animation-delay: -5s;
-  width: 400px; height: 400px;
-}
-
-.cta-inner { position: relative; z-index: 2; }
-
-.cta-banner h2 {
-  color: var(--warm-white);
-  font-size: clamp(2rem, 4vw, 3rem);
-  margin-bottom: var(--space-md);
-}
-
-.cta-banner h2 em { color: var(--sand); }
-
-.cta-banner p {
-  color: rgba(254,252,248,0.75);
-  font-size: 1rem;
-  margin-bottom: var(--space-2xl);
-}
-
-.cta-buttons {
-  display: flex;
-  gap: var(--space-md);
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.cta-banner .btn-primary {
-  background: var(--warm-white);
-  color: var(--clay-dark);
-  border-color: var(--warm-white);
-}
-
-.cta-banner .btn-primary:hover {
-  background: var(--sand);
-  border-color: var(--sand);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-}
-
-/* ─────────────────────────────────────────────
-   20. FOOTER
-───────────────────────────────────────────── */
-.footer {
-  background: var(--text-primary);
-  padding: var(--space-4xl) 0 var(--space-2xl);
-}
-
-.footer-top {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: var(--space-3xl);
-  padding-bottom: var(--space-3xl);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-
-@media (max-width: 900px) {
-  .footer-top { grid-template-columns: 1fr 1fr; }
-  .footer-brand { grid-column: 1 / -1; }
-}
-
-@media (max-width: 480px) {
-  .footer-top { grid-template-columns: 1fr; }
-}
-
-.footer-brand .nav-logo { margin-bottom: var(--space-md); }
-.footer-brand .logo-text { color: var(--sand); }
-.footer-brand p {
-  font-family: var(--font-ui);
-  font-size: 0.875rem;
-  color: rgba(255,255,255,0.4);
-  line-height: 1.7;
-  margin-bottom: var(--space-lg);
-}
-
-.footer-social {
-  display: flex;
-  gap: var(--space-md);
-}
-
-.footer-social a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.07);
-  color: rgba(255,255,255,0.5);
-  transition: background var(--dur-fast), color var(--dur-fast), transform var(--dur-fast) var(--ease-spring);
-}
-
-.footer-social a:hover {
-  background: var(--clay);
-  color: var(--warm-white);
-  transform: translateY(-2px);
-}
-
-.footer-links-col h4 {
-  font-family: var(--font-ui);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
-  margin-bottom: var(--space-lg);
-}
-
-.footer-links-col ul { display: flex; flex-direction: column; gap: var(--space-md); }
-
-.footer-links-col a {
-  font-family: var(--font-ui);
-  font-size: 0.875rem;
-  color: rgba(255,255,255,0.55);
-  transition: color var(--dur-fast), padding-left var(--dur-med) var(--ease-out);
-}
-
-.footer-links-col a:hover {
-  color: var(--sand);
-  padding-left: 6px;
-}
-
-.footer-bottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: var(--space-2xl);
-  flex-wrap: wrap;
-  gap: var(--space-md);
-}
-
-.footer-bottom p {
-  font-family: var(--font-ui);
-  font-size: 0.8rem;
-  color: rgba(255,255,255,0.3);
-}
-
-.footer-legal {
-  display: flex;
-  gap: var(--space-lg);
-}
-
-.footer-legal a {
-  font-family: var(--font-ui);
-  font-size: 0.8rem;
-  color: rgba(255,255,255,0.3);
-  transition: color var(--dur-fast);
-}
-
-.footer-legal a:hover { color: rgba(255,255,255,0.6); }
-
-/* ─────────────────────────────────────────────
-   21. KEYFRAMES HELPERS
-───────────────────────────────────────────── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-@keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-30px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.92); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-/* ─────────────────────────────────────────────
-   22. FORM ELEMENTS (SHARED)
-───────────────────────────────────────────── */
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.form-label {
-  font-family: var(--font-ui);
-  font-size: 0.825rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-}
-
-.form-input,
-.form-select,
-.form-textarea {
-  background: var(--parchment);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 0.75rem 1rem;
-  font-family: var(--font-ui);
-  font-size: 0.9rem;
-  color: var(--text-primary);
-  transition: border-color var(--dur-fast), box-shadow var(--dur-fast), background var(--dur-fast);
-  width: 100%;
-  outline: none;
-}
-
-.form-input::placeholder,
-.form-textarea::placeholder {
-  color: var(--text-muted);
-}
-
-.form-input:focus,
-.form-select:focus,
-.form-textarea:focus {
-  border-color: var(--clay);
-  background: var(--warm-white);
-  box-shadow: 0 0 0 3px rgba(196,98,45,0.12);
-}
-
-.form-input.error { border-color: #C94040; box-shadow: 0 0 0 3px rgba(201,64,64,0.12); }
-
-.form-error {
-  font-family: var(--font-ui);
-  font-size: 0.78rem;
-  color: #C94040;
-}
-
-.form-hint {
-  font-family: var(--font-ui);
-  font-size: 0.78rem;
-  color: var(--text-muted);
-}
-
-.form-textarea { resize: vertical; min-height: 120px; }
-
-/* ─────────────────────────────────────────────
-   23. BADGE / TAG COMPONENTS
-───────────────────────────────────────────── */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.2rem 0.6rem;
-  border-radius: var(--radius-full);
-  font-family: var(--font-ui);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.badge-clay    { background: rgba(196,98,45,0.12); color: var(--clay-dark); }
-.badge-moss    { background: rgba(92,107,58,0.12); color: var(--moss); }
-.badge-ochre   { background: rgba(201,146,42,0.12); color: var(--ochre); }
-.badge-dark    { background: var(--bark); color: var(--sand); }
-
-/* ─────────────────────────────────────────────
-   24. TOAST NOTIFICATIONS
-───────────────────────────────────────────── */
-.toast-container {
-  position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  z-index: 5000;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.toast {
-  background: var(--bark);
-  color: var(--warm-white);
-  font-family: var(--font-ui);
-  font-size: 0.875rem;
-  padding: 0.875rem 1.25rem;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  border-left: 3px solid var(--clay);
-  animation: toastIn 0.4s var(--ease-spring) forwards;
-  max-width: 320px;
-}
-
-.toast.exit { animation: toastOut 0.3s var(--ease-in-out) forwards; }
-
-@keyframes toastIn {
-  from { opacity: 0; transform: translateX(40px) scale(0.95); }
-  to   { opacity: 1; transform: translateX(0) scale(1); }
-}
-
-@keyframes toastOut {
-  from { opacity: 1; transform: translateX(0); }
-  to   { opacity: 0; transform: translateX(40px); }
-}
-
-/* ─────────────────────────────────────────────
-   25. LOADING SPINNER
-───────────────────────────────────────────── */
-.spinner {
-  width: 36px; height: 36px;
-  border: 3px solid var(--border);
-  border-top-color: var(--clay);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.loading-state {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-4xl);
-  flex-direction: column;
-  gap: var(--space-lg);
-  color: var(--text-muted);
-  font-family: var(--font-ui);
-  font-size: 0.875rem;
-}
-
-/* ─────────────────────────────────────────────
-   26. MODAL
-───────────────────────────────────────────── */
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(42,26,14,0.6);
-  backdrop-filter: blur(6px);
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-xl);
-  animation: fadeIn 0.25s ease;
-}
-
-.modal {
-  background: var(--parchment);
-  border-radius: var(--radius-xl);
-  max-width: 520px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: var(--shadow-xl);
-  animation: scaleIn 0.35s var(--ease-spring);
-}
-
-.modal-header {
-  padding: var(--space-2xl) var(--space-2xl) 0;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.modal-body { padding: var(--space-xl) var(--space-2xl); }
-.modal-footer { padding: 0 var(--space-2xl) var(--space-2xl); }
-
-.modal-close {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-  background: var(--sand);
-  transition: background var(--dur-fast), color var(--dur-fast);
-  font-size: 1.2rem;
-  line-height: 1;
-}
-
-.modal-close:hover { background: var(--sand-dark); color: var(--text-primary); }
-
-/* ─────────────────────────────────────────────
-   27. EMPTY STATE
-───────────────────────────────────────────── */
-.empty-state {
-  text-align: center;
-  padding: var(--space-4xl) var(--space-xl);
-  color: var(--text-muted);
-}
-
-.empty-state-icon {
-  font-size: 3rem;
-  margin-bottom: var(--space-lg);
-  display: block;
-  opacity: 0.5;
-}
-
-.empty-state h3 {
-  font-size: 1.1rem;
-  margin-bottom: var(--space-sm);
-  color: var(--text-secondary);
-}
-
-.empty-state p {
-  font-size: 0.875rem;
-  margin-bottom: var(--space-xl);
-}
-
-/* ─────────────────────────────────────────────
-   28. PAGE HERO (INNER PAGES)
-───────────────────────────────────────────── */
-.page-hero {
-  padding: calc(var(--nav-h) + var(--space-3xl)) var(--space-xl) var(--space-3xl);
-  background: var(--linen);
-  border-bottom: 1px solid var(--border);
-}
-
-.page-hero-inner {
-  max-width: var(--max-width);
-  margin: 0 auto;
-}
-
-.page-hero h1 {
-  font-size: clamp(1.8rem, 4vw, 2.8rem);
-  margin-bottom: var(--space-sm);
-}
-
-.page-hero p {
-  color: var(--text-muted);
-  font-size: 0.95rem;
-}
-
-/* ─────────────────────────────────────────────
-   29. STAR RATING
-───────────────────────────────────────────── */
-.stars {
-  display: inline-flex;
-  gap: 2px;
-  color: var(--ochre);
-  font-size: 0.85rem;
-}
-
-/* ─────────────────────────────────────────────
-   30. SCROLLBAR STYLING
-───────────────────────────────────────────── */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--linen); }
-::-webkit-scrollbar-thumb { background: var(--sand-dark); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--bark-light); }
-
-/* ─────────────────────────────────────────────
-   31. SELECTION
-───────────────────────────────────────────── */
-::selection {
-  background: rgba(196,98,45,0.2);
-  color: var(--clay-dark);
-}
-
-/* ─────────────────────────────────────────────
-   32. FOCUS STYLES (ACCESSIBILITY)
-───────────────────────────────────────────── */
-:focus-visible {
-  outline: 2px solid var(--clay);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-
-/* ─────────────────────────────────────────────
-   33. UTILITY CLASSES
-───────────────────────────────────────────── */
-.text-clay    { color: var(--clay); }
-.text-muted   { color: var(--text-muted); }
-.text-center  { text-align: center; }
-.text-right   { text-align: right; }
-.mt-sm { margin-top: var(--space-sm); }
-.mt-md { margin-top: var(--space-md); }
-.mt-lg { margin-top: var(--space-lg); }
-.mt-xl { margin-top: var(--space-xl); }
-.mb-sm { margin-bottom: var(--space-sm); }
-.mb-md { margin-bottom: var(--space-md); }
-.mb-xl { margin-bottom: var(--space-xl); }
-.flex  { display: flex; }
-.flex-center { display: flex; align-items: center; justify-content: center; }
-.gap-sm { gap: var(--space-sm); }
-.gap-md { gap: var(--space-md); }
-.gap-lg { gap: var(--space-lg); }
-.w-full { width: 100%; }
-.font-ui { font-family: var(--font-ui); }
-.font-display { font-family: var(--font-display); }
-
-/* ─────────────────────────────────────────────
-   34. PRINT
-───────────────────────────────────────────── */
-@media print {
-  .navbar, .cursor, .cursor-follower, .noise-overlay,
-  .hero-float-card, .blob { display: none; }
-  body { cursor: auto; }
-}
-
-/* ═══════════════════════════════════════════════
-   35. MOBILE RESPONSIVE — GLOBAL OVERRIDES
-   Covers all breakpoints for every section
-   on the index/landing page and shared elements
-═══════════════════════════════════════════════ */
-
-/* ── Tablet (≤ 1024px) ── */
-@media (max-width: 1024px) {
-  :root { --nav-h: 64px; }
-
-  .hero-float-card { display: none; }
-
-  .hero-content {
-    padding: calc(var(--nav-h) + var(--space-2xl)) var(--space-xl) var(--space-2xl);
-    margin-left: 0;
-    max-width: 100%;
-  }
-
-  .hero-title .line-2 { padding-left: 1rem; }
-  .hero-title .line-3 { padding-left: 2.5rem; }
-
-  .hero-stats {
-    gap: var(--space-lg);
-  }
-
-  .stat-num { font-size: 1.4rem; }
-}
-
-/* ── Mobile (≤ 768px) ── */
-@media (max-width: 768px) {
-  :root {
-    --nav-h:     60px;
-    --space-4xl: 4rem;
-    --space-3xl: 3rem;
-  }
-
-  /* Navbar */
-  .nav-inner { padding: 0 var(--space-lg); }
-
-  /* Hero */
-  .hero {
-    min-height: 100svh;
-    align-items: flex-start;
-  }
-
-  .hero-content {
-    padding: calc(var(--nav-h) + var(--space-2xl)) var(--space-lg) var(--space-2xl);
-    text-align: left;
-  }
-
-  .hero-title .line-2 { padding-left: 0; }
-  .hero-title .line-3 { padding-left: 1rem; }
-
-  .hero-sub { font-size: 0.95rem; }
-
-  .hero-cta-group {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .btn-hero { width: 100%; justify-content: center; }
-
-  .hero-stats {
-    gap: var(--space-md);
-    flex-wrap: wrap;
-  }
-
-  .stat-num  { font-size: 1.2rem; }
-  .stat-label { font-size: 0.7rem; }
-
-  .hero-scroll-hint { display: none; }
-
-  /* Marquee */
-  .marquee-track { font-size: 0.72rem; gap: var(--space-lg); }
-
-  /* Section headers */
-  .section-header { margin-bottom: var(--space-2xl); }
-  .section-title  { font-size: clamp(1.5rem, 5vw, 2.2rem); }
-
-  /* Categories */
-  .categories-section { padding: var(--space-3xl) 0; }
-
-  .categories-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-sm);
-  }
-
-  .cat-large {
-    grid-column: 1 / -1;
-    aspect-ratio: 16 / 7;
-  }
-
-  .cat-all {
-    grid-column: 1 / -1;
-    aspect-ratio: auto;
-    min-height: 100px;
-  }
-
-  /* Products grid */
-  .products-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-md);
-  }
-
-  /* Sellers grid */
-  .sellers-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-md);
-  }
-
-  /* How it works */
-  .how-section { padding: var(--space-3xl) 0; }
-
-  .how-steps {
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--space-md);
-  }
-
-  .how-step {
-    max-width: 100%;
-    text-align: left;
-    display: flex;
-    flex-direction: row;
-    gap: var(--space-lg);
-    align-items: flex-start;
-    padding: var(--space-lg);
-  }
-
-  .step-icon { font-size: 1.5rem; margin: 0; flex-shrink: 0; }
-  .step-num  { margin: 0 0 4px 0; }
-  .how-step-arrow { display: none; }
-
-  /* Testimonials */
-  .testimonials-track { gap: var(--space-md); }
-  .testimonial-card { flex: 0 0 88vw; padding: var(--space-xl); }
-
-  /* Values */
-  .values-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-lg);
-  }
-
-  .value-item { padding: var(--space-lg) var(--space-md); }
-
-  /* CTA banner */
-  .cta-banner { padding: var(--space-3xl) 0; }
-  .cta-buttons {
-    flex-direction: column;
-    align-items: center;
-  }
-  .btn-large { width: 100%; max-width: 280px; justify-content: center; }
-
-  /* Footer */
-  .footer { padding: var(--space-3xl) 0 var(--space-2xl); }
-
-  .footer-top {
-    grid-template-columns: 1fr;
-    gap: var(--space-2xl);
-  }
-
-  .footer-bottom {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .footer-legal { flex-wrap: wrap; justify-content: center; gap: var(--space-md); }
-}
-
-/* ── Small mobile (≤ 480px) ── */
-@media (max-width: 480px) {
-  :root { --nav-h: 56px; }
-
-  .container { padding: 0 var(--space-md); }
-
-  /* Hero title even tighter */
-  .hero-content {
-    padding: calc(var(--nav-h) + var(--space-xl)) var(--space-md) var(--space-xl);
-  }
-
-  .hero-title .line-3 { padding-left: 0.5rem; }
-
-  .hero-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-md);
-  }
-
-  .stat-divider { display: none; }
-
-  /* Single column grids */
-  .products-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-sm);
-  }
-
-  .product-card .product-info { padding: var(--space-sm); }
-  .product-title { font-size: 0.82rem; }
-
-  .sellers-grid { grid-template-columns: 1fr; }
-
-  .values-grid  { grid-template-columns: 1fr; }
-
-  .categories-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-sm);
-  }
-
-  .cat-large { aspect-ratio: 16 / 8; }
-
-  /* CTA */
-  .cta-banner h2 { font-size: 1.5rem; }
-
-  /* Testimonials full width */
-  .testimonial-card { flex: 0 0 92vw; }
-
-  /* Marquee smaller */
-  .marquee-strip { padding: 0.6rem 0; }
-  .marquee-track { font-size: 0.68rem; }
-
-  /* How it works */
-  .how-tabs {
-    width: 100%;
-  }
-  .how-tab { font-size: 0.78rem; padding: 0.5rem 0.75rem; }
-}
-
-/* ── Very small (≤ 360px) ── */
-@media (max-width: 360px) {
-  .hero-content { padding-left: var(--space-md); padding-right: var(--space-md); }
-  .products-grid { grid-template-columns: 1fr; }
-  .categories-grid { grid-template-columns: 1fr; }
-  .cat-large { aspect-ratio: 4/3; }
-}
-
-/* ── Touch device: disable custom cursor ── */
-@media (hover: none), (pointer: coarse) {
-  .cursor, .cursor-follower { display: none !important; }
-  body { cursor: auto !important; }
-}
-
-/* ── Safe area insets for notched phones (iPhone X+) ── */
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  .bottom-nav {
-    padding-bottom: max(var(--space-sm), env(safe-area-inset-bottom));
-  }
-
-  .navbar {
-    padding-top: env(safe-area-inset-top);
-  }
-}
-
-/* ── Landscape mobile ── */
-@media (max-width: 812px) and (orientation: landscape) {
-  .hero {
-    min-height: auto;
-    padding-bottom: var(--space-2xl);
-  }
-
-  .hero-content {
-    padding-top: calc(var(--nav-h) + var(--space-lg));
-  }
-
-  .hero-float-card { display: none; }
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CraftNest — Handmade Marketplace</title>
+  <meta name="theme-color" content="#FFFBF4" />
+  <meta name="msapplication-navbutton-color" content="#FFFBF4" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="stylesheet" href="styles/components.css" />
+  <style>
+    /* ── Index-page mobile overrides ── */
+
+    /* Always show navbar bg on index so hero text isn't hidden behind transparent bar */
+    #navbar {
+      background: rgba(251, 246, 239, 0.97);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 var(--border);
+    }
+    @media (max-width: 480px) {
+      /* Sellers section watermark too large on mobile */
+      .sellers-section::before { font-size: 3.5rem; }
+
+      /* Featured section header stacks vertically */
+      .featured-section .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+      }
+
+      /* Products grid 2-col on small screens */
+      #featuredGrid { grid-template-columns: repeat(2, 1fr); gap: var(--space-sm); }
+
+      /* CTA banner buttons full width */
+      .cta-banner .btn-primary,
+      .cta-banner .btn-outline { max-width: 100%; }
+
+      /* Footer social row centered */
+      .footer-social { justify-content: flex-start; }
+
+      /* Hero stat grid for tiny screens */
+      .hero-stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-md);
+        width: 100%;
+      }
+      .hero-stats .stat:last-child {
+        grid-column: 1 / -1;
+        text-align: center;
+      }
+    }
+
+    /* Ensure hero never hides behind fixed navbar on any screen */
+    .hero { padding-top: 0 !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Custom Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-follower" id="cursorFollower"></div>
+
+  <!-- Noise Overlay -->
+  <div class="noise-overlay"></div>
+
+  <!-- ───────────── NAVBAR ───────────── -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-icon">🪡</span>
+        <span class="logo-text">CraftNest</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="pages/marketplace.html">Explore</a></li>
+        <li><a href="#categories">Categories</a></li>
+        <li><a href="#sellers">Artisans</a></li>
+        <li><a href="#how">How it works</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <a href="pages/marketplace.html" class="nav-search-btn" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </a>
+        <a href="pages/cart.html" class="nav-cart-btn" aria-label="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="cart-badge" id="cartBadge">0</span>
+        </a>
+        <a href="pages/auth.html" class="btn-nav-login">Sign in</a>
+        <a href="pages/auth.html?mode=register" class="btn-nav-join">Join Free</a>
+      </div>
+
+      <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="pages/marketplace.html">Explore</a>
+      <a href="#categories">Categories</a>
+      <a href="#sellers">Artisans</a>
+      <a href="#how">How it works</a>
+      <div class="mobile-menu-divider"></div>
+      <a href="pages/auth.html">Sign in</a>
+      <a href="pages/auth.html?mode=register" class="mobile-join">Join Free</a>
+    </div>
+  </nav>
+
+  <!-- ───────────── HERO ───────────── -->
+  <section class="hero" id="hero">
+    <!-- Floating blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <!-- Floating product cards (decorative, hidden on mobile via CSS) -->
+    <div class="hero-float-card float-card-1" data-depth="0.3">
+      <img src="https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=200&q=80" alt="Pottery" />
+      <span>Hand-thrown Ceramics</span>
+    </div>
+    <div class="hero-float-card float-card-2" data-depth="0.5">
+      <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=200&q=80" alt="Jewelry" />
+      <span>Artisan Jewelry</span>
+    </div>
+    <div class="hero-float-card float-card-3" data-depth="0.2">
+      <img src="https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=200&q=80" alt="Candle" />
+      <span>Beeswax Candles</span>
+    </div>
+
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span class="eyebrow-dot"></span>
+        <span>100% Handmade · 100% Real Makers</span>
+      </div>
+
+      <h1 class="hero-title">
+        <span class="line line-1">Where Every</span>
+        <span class="line line-2"><em>Craft</em> Has a</span>
+        <span class="line line-3">Story.</span>
+      </h1>
+
+      <p class="hero-sub">
+        Discover one-of-a-kind handmade goods from independent artisans.<br/>
+        From clay to thread — buy directly, support directly.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="pages/marketplace.html" class="btn-primary btn-hero">
+          <span>Start Exploring</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="pages/auth.html?mode=register&type=seller" class="btn-ghost btn-hero">
+          Sell Your Craft
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num" data-target="12400">0</span>
+          <span class="stat-label">Artisans</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num" data-target="89000">0</span>
+          <span class="stat-label">Handmade Items</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num" data-target="340000">0</span>
+          <span class="stat-label">Happy Buyers</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-scroll-hint">
+      <span>Scroll to discover</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ───────────── MARQUEE STRIP ───────────── -->
+  <div class="marquee-strip">
+    <div class="marquee-track">
+      <span>Ceramics</span><span class="dot">✦</span>
+      <span>Macramé</span><span class="dot">✦</span>
+      <span>Beeswax Candles</span><span class="dot">✦</span>
+      <span>Hand-dyed Textiles</span><span class="dot">✦</span>
+      <span>Wood Carving</span><span class="dot">✦</span>
+      <span>Forged Jewelry</span><span class="dot">✦</span>
+      <span>Botanical Prints</span><span class="dot">✦</span>
+      <span>Leatherwork</span><span class="dot">✦</span>
+      <span>Handmade Soaps</span><span class="dot">✦</span>
+      <span>Woven Baskets</span><span class="dot">✦</span>
+      <!-- duplicate for seamless loop -->
+      <span>Ceramics</span><span class="dot">✦</span>
+      <span>Macramé</span><span class="dot">✦</span>
+      <span>Beeswax Candles</span><span class="dot">✦</span>
+      <span>Hand-dyed Textiles</span><span class="dot">✦</span>
+      <span>Wood Carving</span><span class="dot">✦</span>
+      <span>Forged Jewelry</span><span class="dot">✦</span>
+      <span>Botanical Prints</span><span class="dot">✦</span>
+      <span>Leatherwork</span><span class="dot">✦</span>
+      <span>Handmade Soaps</span><span class="dot">✦</span>
+      <span>Woven Baskets</span><span class="dot">✦</span>
+    </div>
+  </div>
+
+  <!-- ───────────── CATEGORIES ───────────── -->
+  <section class="categories-section" id="categories">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Browse by craft</div>
+        <h2 class="section-title">Find Your <em>Favourite</em> Medium</h2>
+        <p class="section-sub">Every item shaped by human hands, not machines.</p>
+      </div>
+
+      <div class="categories-grid">
+        <a href="pages/marketplace.html?cat=ceramics" class="cat-card cat-large" data-cat="ceramics">
+          <div class="cat-img-wrap">
+            <img src="https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=600&q=80" alt="Ceramics" />
+          </div>
+          <div class="cat-info">
+            <h3>Ceramics & Pottery</h3>
+            <span>3,200+ items</span>
+          </div>
+          <div class="cat-hover-arrow">→</div>
+        </a>
+
+        <a href="pages/marketplace.html?cat=jewelry" class="cat-card" data-cat="jewelry">
+          <div class="cat-img-wrap">
+            <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&q=80" alt="Jewelry" />
+          </div>
+          <div class="cat-info">
+            <h3>Jewelry</h3>
+            <span>8,100+ items</span>
+          </div>
+          <div class="cat-hover-arrow">→</div>
+        </a>
+
+        <a href="pages/marketplace.html?cat=textiles" class="cat-card" data-cat="textiles">
+          <div class="cat-img-wrap">
+            <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400&q=80" alt="Textiles" />
+          </div>
+          <div class="cat-info">
+            <h3>Textiles & Weaving</h3>
+            <span>5,400+ items</span>
+          </div>
+          <div class="cat-hover-arrow">→</div>
+        </a>
+
+        <a href="pages/marketplace.html?cat=woodwork" class="cat-card" data-cat="woodwork">
+          <div class="cat-img-wrap">
+            <img src="https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=400&q=80" alt="Woodwork" />
+          </div>
+          <div class="cat-info">
+            <h3>Woodwork</h3>
+            <span>2,700+ items</span>
+          </div>
+          <div class="cat-hover-arrow">→</div>
+        </a>
+
+        <a href="pages/marketplace.html?cat=candles" class="cat-card" data-cat="candles">
+          <div class="cat-img-wrap">
+            <img src="https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&q=80" alt="Candles" />
+          </div>
+          <div class="cat-info">
+            <h3>Candles & Soaps</h3>
+            <span>4,500+ items</span>
+          </div>
+          <div class="cat-hover-arrow">→</div>
+        </a>
+
+        <a href="pages/marketplace.html?cat=art" class="cat-card" data-cat="art">
+          <div class="cat-img-wrap">
+            <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400&q=80" alt="Art" />
+          </div>
+          <div class="cat-info">
+            <h3>Art & Prints</h3>
+            <span>6,800+ items</span>
+          </div>
+          <div class="cat-hover-arrow">→</div>
+        </a>
+
+        <a href="pages/marketplace.html" class="cat-card cat-all">
+          <div class="cat-all-inner">
+            <span class="cat-all-icon">✦</span>
+            <h3>View All<br/>Categories</h3>
+            <span>40,000+ items</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────── FEATURED PRODUCTS ───────────── -->
+  <section class="featured-section" id="featured">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Hand-picked for you</div>
+        <h2 class="section-title">Trending This Week</h2>
+        <a href="pages/marketplace.html" class="section-link">See all →</a>
+      </div>
+
+      <div class="products-grid" id="featuredGrid">
+        <!-- Product Cards injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────── SELLER SPOTLIGHT ───────────── -->
+  <section class="sellers-section" id="sellers">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">The people behind the craft</div>
+        <h2 class="section-title">Meet Our <em>Artisans</em></h2>
+        <p class="section-sub">Real makers with real stories. Every purchase supports an independent creator.</p>
+      </div>
+
+      <div class="sellers-grid">
+        <a href="pages/seller-profile.html?id=1" class="seller-card">
+          <div class="seller-img-wrap">
+            <img src="https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=300&q=80" alt="Priya" />
+            <div class="seller-badge">⭐ Top Seller</div>
+          </div>
+          <div class="seller-info">
+            <h3>Priya's Pottery</h3>
+            <span class="seller-location">📍 Jaipur, India</span>
+            <p>Wheel-thrown stoneware inspired by Rajasthani landscapes and ancient folk motifs.</p>
+            <div class="seller-meta">
+              <span>847 sales</span>
+              <span>·</span>
+              <span>★ 4.97</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="pages/seller-profile.html?id=2" class="seller-card">
+          <div class="seller-img-wrap">
+            <img src="https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=300&q=80" alt="Marco" />
+            <div class="seller-badge">🔥 Rising Star</div>
+          </div>
+          <div class="seller-info">
+            <h3>Marco Forges</h3>
+            <span class="seller-location">📍 Florence, Italy</span>
+            <p>Third-generation blacksmith crafting heirloom jewelry from reclaimed metals.</p>
+            <div class="seller-meta">
+              <span>312 sales</span>
+              <span>·</span>
+              <span>★ 4.93</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="pages/seller-profile.html?id=3" class="seller-card">
+          <div class="seller-img-wrap">
+            <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=300&q=80" alt="Amara" />
+            <div class="seller-badge">💎 Verified</div>
+          </div>
+          <div class="seller-info">
+            <h3>Amara Weaves</h3>
+            <span class="seller-location">📍 Accra, Ghana</span>
+            <p>Kente-inspired handwoven textiles blending tradition with contemporary design.</p>
+            <div class="seller-meta">
+              <span>1,204 sales</span>
+              <span>·</span>
+              <span>★ 5.00</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="pages/seller-profile.html?id=4" class="seller-card">
+          <div class="seller-img-wrap">
+            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&q=80" alt="Suki" />
+          </div>
+          <div class="seller-info">
+            <h3>Suki's Botanicals</h3>
+            <span class="seller-location">📍 Kyoto, Japan</span>
+            <p>Slow-poured beeswax candles with pressed botanical specimens from her garden.</p>
+            <div class="seller-meta">
+              <span>2,109 sales</span>
+              <span>·</span>
+              <span>★ 4.99</span>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="sellers-cta">
+        <a href="pages/auth.html?mode=register&type=seller" class="btn-primary">
+          <span>Become a Seller</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────── HOW IT WORKS ───────────── -->
+  <section class="how-section" id="how">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Simple as that</div>
+        <h2 class="section-title">How CraftNest Works</h2>
+      </div>
+
+      <div class="how-tabs">
+        <button class="how-tab active" data-tab="buyers">For Buyers</button>
+        <button class="how-tab" data-tab="sellers">For Sellers</button>
+      </div>
+
+      <div class="how-content" id="howContent">
+        <!-- Buyers Steps -->
+        <div class="how-steps" data-for="buyers">
+          <div class="how-step">
+            <div class="step-num">01</div>
+            <div class="step-icon">🔍</div>
+            <h3>Discover</h3>
+            <p>Browse thousands of handmade goods filtered by craft, material, price, and maker location.</p>
+          </div>
+          <div class="how-step-arrow">⟶</div>
+          <div class="how-step">
+            <div class="step-num">02</div>
+            <div class="step-icon">💬</div>
+            <h3>Connect</h3>
+            <p>Message artisans directly. Ask for custom sizes, colours, or personalised engravings.</p>
+          </div>
+          <div class="how-step-arrow">⟶</div>
+          <div class="how-step">
+            <div class="step-num">03</div>
+            <div class="step-icon">🛍️</div>
+            <h3>Buy Securely</h3>
+            <p>Checkout is protected. Payment held until your item arrives safely.</p>
+          </div>
+          <div class="how-step-arrow">⟶</div>
+          <div class="how-step">
+            <div class="step-num">04</div>
+            <div class="step-icon">✨</div>
+            <h3>Treasure It</h3>
+            <p>Every piece comes with the maker's story card — a little piece of them with you.</p>
+          </div>
+        </div>
+
+        <!-- Sellers Steps -->
+        <div class="how-steps hidden" data-for="sellers">
+          <div class="how-step">
+            <div class="step-num">01</div>
+            <div class="step-icon">🧑‍🎨</div>
+            <h3>Create Profile</h3>
+            <p>Tell your story. Upload your workshop photos and describe your craft philosophy.</p>
+          </div>
+          <div class="how-step-arrow">⟶</div>
+          <div class="how-step">
+            <div class="step-num">02</div>
+            <div class="step-icon">📸</div>
+            <h3>List Products</h3>
+            <p>Add your items with beautiful photos, detailed descriptions, and your own pricing.</p>
+          </div>
+          <div class="how-step-arrow">⟶</div>
+          <div class="how-step">
+            <div class="step-num">03</div>
+            <div class="step-icon">💰</div>
+            <h3>Sell & Earn</h3>
+            <p>We take just 5% — one of the lowest fees in handmade marketplaces anywhere.</p>
+          </div>
+          <div class="how-step-arrow">⟶</div>
+          <div class="how-step">
+            <div class="step-num">04</div>
+            <div class="step-icon">📈</div>
+            <h3>Grow</h3>
+            <p>Analytics, repeat buyers, reviews — a full dashboard to help your craft business thrive.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────── TESTIMONIALS ───────────── -->
+  <section class="testimonials-section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Real stories</div>
+        <h2 class="section-title">The CraftNest <em>Community</em></h2>
+      </div>
+
+      <div class="testimonials-track" id="testimonialsTrack">
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <blockquote>"I ordered a custom ceramic mug and received the most beautiful piece of art I own. Priya even included a handwritten note about the clay she used."</blockquote>
+          <div class="testimonial-author">
+            <img src="https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=60&q=80" alt="Neha" />
+            <div>
+              <strong>Neha R.</strong>
+              <span>Hyderabad, India</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <blockquote>"My sales tripled after joining CraftNest. The platform actually cares about makers. The 5% fee means I keep what I earn."</blockquote>
+          <div class="testimonial-author">
+            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&q=80" alt="Carlos" />
+            <div>
+              <strong>Carlos M.</strong>
+              <span>Seller · Mexico City</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <blockquote>"Found a one-of-a-kind hand-forged ring for my wedding. Marco customised it with our initials. I get compliments on it every single day."</blockquote>
+          <div class="testimonial-author">
+            <img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=60&q=80" alt="Aisha" />
+            <div>
+              <strong>Aisha T.</strong>
+              <span>London, UK</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <blockquote>"The seller dashboard is genuinely powerful — inventory tracking, buyer messages, earnings analytics. Built for real small businesses."</blockquote>
+          <div class="testimonial-author">
+            <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=60&q=80" alt="Suki" />
+            <div>
+              <strong>Suki W.</strong>
+              <span>Seller · Kyoto, Japan</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-dots" id="testimonialDots">
+        <span class="tdot active" data-i="0"></span>
+        <span class="tdot" data-i="1"></span>
+        <span class="tdot" data-i="2"></span>
+        <span class="tdot" data-i="3"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────── VALUES STRIP ───────────── -->
+  <section class="values-section">
+    <div class="container">
+      <div class="values-grid">
+        <div class="value-item">
+          <span class="value-icon">🤝</span>
+          <h4>Direct Connection</h4>
+          <p>Buy from the maker, not a middleman. Every message goes straight to the artisan.</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">🌱</span>
+          <h4>Sustainably Made</h4>
+          <p>Handmade means small batches, natural materials, and zero factory waste.</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">🛡️</span>
+          <h4>Buyer Protection</h4>
+          <p>Every order covered. If it's not as described, we make it right. No questions.</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">💛</span>
+          <h4>Makers First</h4>
+          <p>5% fee — that's it. The lowest in the space, because your craft deserves better.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────── CTA BANNER ───────────── -->
+  <section class="cta-banner">
+    <div class="cta-blob"></div>
+    <div class="cta-blob cta-blob-2"></div>
+    <div class="container">
+      <div class="cta-inner">
+        <h2>Ready to find something<br/><em>truly</em> one of a kind?</h2>
+        <p>Join 340,000+ buyers supporting independent makers worldwide.</p>
+        <div class="cta-buttons">
+          <a href="pages/marketplace.html" class="btn-primary btn-large">Explore the Market</a>
+          <a href="pages/auth.html?mode=register" class="btn-outline btn-large">Create Free Account</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────── FOOTER ───────────── -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="index.html" class="nav-logo">
+            <span class="logo-icon">🪡</span>
+            <span class="logo-text">CraftNest</span>
+          </a>
+          <p>A marketplace built for makers,<br/>by people who love handmade.</p>
+          <div class="footer-social">
+            <a href="#" aria-label="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+            <a href="#" aria-label="Pinterest">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.5 2 2 6.5 2 12c0 4.2 2.6 7.8 6.3 9.3-.1-.8-.1-2.1.1-3 .3-1.1 1.8-7.6 1.8-7.6s-.5-.9-.5-2.3c0-2.2 1.3-3.8 2.9-3.8 1.4 0 2 1 2 2.2 0 1.4-.9 3.4-1.3 5.3-.4 1.6.8 2.9 2.3 2.9 2.7 0 4.8-2.9 4.8-7 0-3.7-2.6-6.2-6.4-6.2-4.3 0-6.9 3.2-6.9 6.6 0 1.3.5 2.7 1.1 3.5.1.1.1.3.1.4-.1.5-.4 1.6-.4 1.8 0 .3-.2.4-.4.3C5.3 18.9 4 16.6 4 14c0-4.4 3.2-8.5 9.2-8.5 4.8 0 8.6 3.4 8.6 8 0 4.7-3 8.6-7.1 8.6-1.4 0-2.7-.7-3.1-1.5l-.9 3.3c-.3 1.2-1.1 2.7-1.7 3.6.9.3 1.8.4 2.8.4 5.5 0 10-4.5 10-10S17.5 2 12 2z"/></svg>
+            </a>
+            <a href="#" aria-label="Twitter/X">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l16 16M4 20L20 4"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-links-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="pages/marketplace.html">All Products</a></li>
+            <li><a href="pages/marketplace.html?cat=ceramics">Ceramics</a></li>
+            <li><a href="pages/marketplace.html?cat=jewelry">Jewelry</a></li>
+            <li><a href="pages/marketplace.html?cat=textiles">Textiles</a></li>
+            <li><a href="pages/marketplace.html?cat=woodwork">Woodwork</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <h4>Sellers</h4>
+          <ul>
+            <li><a href="pages/auth.html?mode=register&type=seller">Start Selling</a></li>
+            <li><a href="pages/seller-dashboard.html">Dashboard</a></li>
+            <li><a href="#">Seller Guide</a></li>
+            <li><a href="#">Fees & Pricing</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About CraftNest</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Press</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2025 CraftNest. Made with ♥ for makers everywhere.</p>
+        <div class="footer-legal">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ─── Cursor (inline, no module needed) ───
+    (function() {
+      if (!window.matchMedia('(hover: hover)').matches) return;
+      const cursor   = document.getElementById('cursor');
+      const follower = document.getElementById('cursorFollower');
+      if (!cursor || !follower) return;
+      let mx = 0, my = 0, fx = 0, fy = 0;
+      document.addEventListener('mousemove', e => {
+        mx = e.clientX; my = e.clientY;
+        cursor.style.transform = `translate(${mx}px, ${my}px)`;
+      });
+      (function loop() {
+        fx += (mx - fx) * 0.1;
+        fy += (my - fy) * 0.1;
+        follower.style.transform = `translate(${fx}px, ${fy}px)`;
+        requestAnimationFrame(loop);
+      })();
+      document.querySelectorAll('a, button').forEach(el => {
+        el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); follower.classList.add('hover'); });
+        el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); follower.classList.remove('hover'); });
+      });
+    })();
+
+    // ─── Navbar scroll ───
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // ─── Hamburger ───
+    document.getElementById('hamburger').addEventListener('click', function() {
+      this.classList.toggle('open');
+      document.getElementById('mobileMenu').classList.toggle('open');
+    });
+
+    // ─── Parallax blobs on hero ───
+    document.addEventListener('mousemove', e => {
+      const { innerWidth: W, innerHeight: H } = window;
+      const dx = (e.clientX / W - 0.5) * 2;
+      const dy = (e.clientY / H - 0.5) * 2;
+      document.querySelectorAll('.blob').forEach((b, i) => {
+        const depth = [30, 20, 15][i];
+        b.style.transform = `translate(${dx * depth}px, ${dy * depth}px)`;
+      });
+      document.querySelectorAll('.hero-float-card').forEach(card => {
+        const d = parseFloat(card.dataset.depth) * 40;
+        card.style.transform = `translate(${dx * d}px, ${dy * d}px)`;
+      });
+    });
+
+    // ─── Counter animation ───
+    function animateCount(el) {
+      const target = parseInt(el.dataset.target);
+      const dur = 2000;
+      const step = target / (dur / 16);
+      let cur = 0;
+      const tick = () => {
+        cur = Math.min(cur + step, target);
+        el.textContent = Math.floor(cur).toLocaleString();
+        if (cur < target) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+    const statsObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          document.querySelectorAll('.stat-num').forEach(animateCount);
+          statsObs.disconnect();
+        }
+      });
+    }, { threshold: 0.5 });
+    const statsEl = document.querySelector('.hero-stats');
+    if (statsEl) statsObs.observe(statsEl);
+
+    // ─── Scroll reveal ───
+    const revealObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('revealed');
+          revealObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    document.querySelectorAll('.cat-card, .seller-card, .how-step, .value-item, .testimonial-card, .section-header').forEach(el => {
+      el.classList.add('reveal');
+      revealObs.observe(el);
+    });
+
+    // ─── How tabs ───
+    document.querySelectorAll('.how-tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        document.querySelectorAll('.how-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        const target = this.dataset.tab;
+        document.querySelectorAll('.how-steps').forEach(s => {
+          s.classList.toggle('hidden', s.dataset.for !== target);
+        });
+      });
+    });
+
+    // ─── Shared cart helper (uses cn_cart_v2 — same key as cart.html) ───
+    function addToCartShared(productId, title) {
+      let data = JSON.parse(localStorage.getItem('cn_cart_v2') || '{"items":[]}');
+      if (!data.items) data.items = [];
+      const idx = data.items.findIndex(i => i.productId === String(productId));
+      if (idx > -1) data.items[idx].quantity++;
+      else data.items.push({ productId: String(productId), quantity: 1, variant: null, addedAt: Date.now() });
+      localStorage.setItem('cn_cart_v2', JSON.stringify(data));
+      const count = data.items.reduce((s, i) => s + i.quantity, 0);
+      const badge = document.getElementById('cartBadge');
+      badge.textContent = count;
+      badge.classList.add('pop');
+      setTimeout(() => badge.classList.remove('pop'), 300);
+      // Simple toast
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.innerHTML = `✅ "${title || 'Item'}" added to cart`;
+      let tc = document.getElementById('toastContainer');
+      if (!tc) { tc = document.createElement('div'); tc.id='toastContainer'; tc.className='toast-container'; document.body.appendChild(tc); }
+      tc.appendChild(t);
+      setTimeout(() => t.remove(), 3500);
+    }
+
+    // ─── Featured Products (demo data) ───
+    const products = [
+      { id: 'p1', title: "Moon Phase Ceramic Mug",          seller: "Priya's Pottery",   price: 1850, img: "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&q=80", rating: 4.9, reviews: 128, tag: "Bestseller" },
+      { id: 'p2', title: "Hand-forged Silver Ring",          seller: "Marco Forges",      price: 4200, img: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400&q=80", rating: 5.0, reviews: 57,  tag: "Custom" },
+      { id: 'p3', title: "Kente-pattern Wall Tapestry",      seller: "Amara Weaves",      price: 6800, img: "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400&q=80", rating: 4.8, reviews: 204, tag: "New" },
+      { id: 'p4', title: "Pressed Lavender Beeswax Candle",  seller: "Suki's Botanicals", price: 950,  img: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&q=80", rating: 4.9, reviews: 340, tag: null },
+      { id: 'p5', title: "Driftwood Serving Board",           seller: "Oak & Stone",       price: 2200, img: "https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=400&q=80", rating: 4.7, reviews: 89,  tag: "Eco" },
+      { id: 'p6', title: "Macramé Plant Hanger Set",          seller: "Knotted & Kind",    price: 1400, img: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=80", rating: 4.8, reviews: 176, tag: null },
+      { id: 'p7', title: "Hand-dyed Indigo Cushion Cover",    seller: "Amara Weaves",      price: 1650, img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=80", rating: 4.9, reviews: 93,  tag: null },
+      { id: 'p8', title: "Botanical Letterpress Print",       seller: "Studio Pressed",    price: 1100, img: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=400&q=80", rating: 4.6, reviews: 61,  tag: "Sale" },
+    ];
+
+    const grid = document.getElementById('featuredGrid');
+    products.forEach((p, i) => {
+      const card = document.createElement('a');
+      card.href = `pages/product.html?id=${p.id}`;
+      card.className = 'product-card reveal';
+      card.innerHTML = `
+        <div class="product-img-wrap">
+          <img src="${p.img}" alt="${p.title}" loading="lazy" />
+          ${p.tag ? `<span class="product-tag">${p.tag}</span>` : ''}
+          <button class="product-wishlist" onclick="event.preventDefault();this.classList.toggle('active')" aria-label="Wishlist">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+          <button class="product-quick-add" onclick="event.preventDefault();addToCartShared('${p.id}','${p.title.replace(/'/g,"\\'")}')">+ Add to Cart</button>
+        </div>
+        <div class="product-info">
+          <span class="product-seller">${p.seller}</span>
+          <h3 class="product-title">${p.title}</h3>
+          <div class="product-meta">
+            <span class="product-rating">★ ${p.rating} <span class="review-count">(${p.reviews})</span></span>
+            <span class="product-price">₹${p.price.toLocaleString()}</span>
+          </div>
+        </div>`;
+      grid.appendChild(card);
+      setTimeout(() => revealObs.observe(card), 50);
+    });
+
+    // ─── Cart badge on load (read cn_cart_v2) ───
+    const savedCart = JSON.parse(localStorage.getItem('cn_cart_v2') || '{"items":[]}');
+    document.getElementById('cartBadge').textContent = (savedCart.items || []).reduce((s, i) => s + i.quantity, 0);
+
+    // ─── Testimonials slider ───
+    const track = document.getElementById('testimonialsTrack');
+    const dots = document.querySelectorAll('.tdot');
+    let currentSlide = 0;
+    function goToSlide(i) {
+      currentSlide = i;
+      const cards = track.querySelectorAll('.testimonial-card');
+      const w = cards[0].offsetWidth + 24;
+      track.style.transform = `translateX(-${i * w}px)`;
+      dots.forEach((d, j) => d.classList.toggle('active', j === i));
+    }
+    dots.forEach(d => d.addEventListener('click', () => goToSlide(parseInt(d.dataset.i))));
+    setInterval(() => goToSlide((currentSlide + 1) % 4), 5000);
+
+    // ─── Hero title stagger ───
+    document.querySelectorAll('.hero-title .line').forEach((l, i) => {
+      l.style.animationDelay = `${i * 0.15 + 0.3}s`;
+    });
+  </script>
+</body>
+</html>
